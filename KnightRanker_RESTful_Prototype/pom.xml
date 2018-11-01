@@ -23,6 +23,8 @@
 
     <properties>
 
+        <!-- Altered to reflect our team implementation on Google Cloud Platform -->
+        <!-- Note: Are the Instance connection name, user, password, database, and endpoint project id correct? -->
         <INSTANCE_CONNECTION_NAME>calvin-cs262-fall2018-pilot:us-east4:calvin-cs262-fall2018-pilot-database</INSTANCE_CONNECTION_NAME>
         <user>postgres</user>
         <password>password</password>
