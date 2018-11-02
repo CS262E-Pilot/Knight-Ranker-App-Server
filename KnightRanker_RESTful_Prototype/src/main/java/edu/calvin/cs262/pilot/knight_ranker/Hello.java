@@ -8,18 +8,18 @@ import com.google.api.server.spi.config.ApiNamespace;
 import static com.google.api.server.spi.config.ApiMethod.HttpMethod.GET;
 
 @Api(
-    name = "monopoly",
+    name = "knightranker",
     version = "v1",
     namespace =
     @ApiNamespace(
-        ownerDomain = "lab09.cs262.calvin.edu",
-        ownerName = "lab09.cs262.calvin.edu",
+        ownerDomain = "knight_ranker.pilot.cs262.calvin.edu",
+        ownerName = "knight_ranker.pilot.cs262.calvin.edu",
         packagePath = ""
     ),
     issuers = {
         @ApiIssuer(
             name = "firebase",
-            issuer = "https://securetoken.google.com/YOUR-PROJECT-ID",
+            issuer = "https://securetoken.google.com/calvin-cs262-fall2018-pilot",
             jwksUri =
                 "https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system"
                     + ".gserviceaccount.com"
