@@ -1,7 +1,4 @@
-Knight-Ranker App-Engine Re-Deployment README.txt
-
--Short Guide on how to re-deploy to Google Cloud Platform
-
+Short Guide on how to re-deploy to Google Cloud Platform
 ======================================================================
 Author: Joseph Jinn
 version 1.2
