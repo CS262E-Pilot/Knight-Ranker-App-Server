@@ -36,8 +36,9 @@ CREATE TABLE Match (
 	verified boolean
 );
 
+-- Modified to use a primary key for RESTful API CRUD Update method.
 CREATE TABLE Follow (
-	--ID integer PRIMARY KEY,
+	ID integer PRIMARY KEY,
 	sportID integer REFERENCES Sport(ID),
 	PlayerID integer REFERENCES Player(ID),
 	rank integer
@@ -65,18 +66,17 @@ INSERT INTO Sport VALUES(DEFAULT, 'Street Fighter V', 'E-Sport');
 INSERT INTO Sport VALUES(DEFAULT, 'Soccer', 'Outdoor');
 INSERT INTO Sport VALUES(DEFAULT, 'Tennis', 'Outdoor');
 
-INSERT INTO Follow VALUES(1, 5, 1);
-INSERT INTO Follow VALUES(1, 1, 2);
-INSERT INTO Follow VALUES(1, 2, 3);
-INSERT INTO Follow VALUES(1, 7, 4);
+INSERT INTO Follow VALUES(1, 1, 5, 1);
+INSERT INTO Follow VALUES(2, 1, 1, 2);
+INSERT INTO Follow VALUES(3, 1, 2, 3);
+INSERT INTO Follow VALUES(4, 1, 7, 4);
 
-INSERT INTO Follow VALUES(3, 6, 1);
-INSERT INTO Follow VALUES(3, 4, 2);
-INSERT INTO Follow VALUES(3, 3, 3);
+INSERT INTO Follow VALUES(5, 3, 6, 1);
+INSERT INTO Follow VALUES(6, 3, 4, 2);
+INSERT INTO Follow VALUES(7, 3, 3, 3);
 
 -- Added to test the Match relation
-
-INSERT INTO Match VALUES(1, 1, 1, 2, 1, 2, 1, NOW(), 1);
-INSERT INTO Match VALUES(2, 2, 3, 4, 3, 4, 3, NOW(), 1);
-INSERT INTO Match VALUES(3, 3, 5, 6, 5, 6, 5, NOW(), 1);
-INSERT INTO Match VALUES(4, 4, 1, 7, 1, 7, 7, NOW(), 1);
+INSERT INTO Match VALUES(1, 1, 1, 2, 1, 2, 1, NOW(), true);
+INSERT INTO Match VALUES(2, 2, 3, 4, 3, 4, 3, NOW(), true);
+INSERT INTO Match VALUES(3, 3, 5, 6, 5, 6, 5, NOW(), true);
+INSERT INTO Match VALUES(4, 4, 1, 7, 1, 7, 7, NOW(), true);

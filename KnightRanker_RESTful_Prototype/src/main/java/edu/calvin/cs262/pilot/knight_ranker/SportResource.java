@@ -106,7 +106,7 @@ import static com.google.api.server.spi.config.ApiMethod.HttpMethod.DELETE;
  * % curl --request DELETE \
  *    https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/sport/5
  */
-public class PlayerResource {
+public class SportResource {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,23 +114,23 @@ public class PlayerResource {
 
     /**
      * GET
-     * This method gets the full list of players from the Player table.
+     * This method gets the full list of sports from the Sport table.
      *
-     * @return JSON-formatted list of player records (based on a root JSON tag of "items")
+     * @return JSON-formatted list of sport records (based on a root JSON tag of "items")
      * @throws SQLException
      */
-    @ApiMethod(path = "players", httpMethod = GET)
-    public List<Player> getPlayers() throws SQLException {
+    @ApiMethod(path = "sports", httpMethod = GET)
+    public List<Sport> getSports() throws SQLException {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
-        List<Player> result = new ArrayList<Player>();
+        List<Sport> result = new ArrayList<Sport>();
         try {
             connection = DriverManager.getConnection(System.getProperty("cloudsql"));
             statement = connection.createStatement();
-            resultSet = selectPlayers(statement);
+            resultSet = selectSports(statement);
             while (resultSet.next()) {
-                Player p = new Player(
+                Sport p = new Sport(
                         Integer.parseInt(resultSet.getString(1)),
                         resultSet.getString(2),
                         resultSet.getString(3)
@@ -159,24 +159,24 @@ public class PlayerResource {
 
     /**
      * GET
-     * This method gets the player from the Player table with the given ID.
+     * This method gets the sport from the Sport table with the given ID.
      *
-     * @param id the ID of the requested player
-     * @return if the player exists, a JSON-formatted player record, otherwise an invalid/empty JSON entity
+     * @param id the ID of the requested sport
+     * @return if the sport exists, a JSON-formatted sport record, otherwise an invalid/empty JSON entity
      * @throws SQLException
      */
-    @ApiMethod(path = "player/{id}", httpMethod = GET)
-    public Player getPlayer(@Named("id") int id) throws SQLException {
+    @ApiMethod(path = "sport/{id}", httpMethod = GET)
+    public Sport getSport(@Named("id") int id) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
-        Player result = null;
+        Sport result = null;
         try {
             connection = DriverManager.getConnection(System.getProperty("cloudsql"));
             statement = connection.createStatement();
-            resultSet = selectPlayer(id, statement);
+            resultSet = selectSport(id, statement);
             if (resultSet.next()) {
-                result = new Player(
+                result = new Sport(
                         Integer.parseInt(resultSet.getString(1)),
                         resultSet.getString(2),
                         resultSet.getString(3)
@@ -204,32 +204,32 @@ public class PlayerResource {
 
     /**
      * PUT
-     * This method creates/updates an instance of Person with a given ID.
-     * If the player doesn't exist, create a new player using the given field values.
-     * If the player already exists, update the fields using the new player field values.
+     * This method creates/updates an instance of Sport with a given ID.
+     * If the sport doesn't exist, create a new sport using the given field values.
+     * If the sport already exists, update the fields using the new sport field values.
      * We do this because PUT is idempotent, meaning that running the same PUT several
      * times is the same as running it exactly once.
-     * Any player ID value set in the passed player data is ignored.
+     * Any sport ID value set in the passed sport data is ignored.
      *
-     * @param id     the ID for the player, assumed to be unique
-     * @param player a JSON representation of the player; The id parameter overrides any id specified here.
-     * @return new/updated player entity
+     * @param id    the ID for the sport, assumed to be unique
+     * @param sport a JSON representation of the sport; The id parameter overrides any id specified here.
+     * @return new/updated sport entity
      * @throws SQLException
      */
-    @ApiMethod(path = "player/{id}", httpMethod = PUT)
-    public Player putPlayer(Player player, @Named("id") int id) throws SQLException {
+    @ApiMethod(path = "sport/{id}", httpMethod = PUT)
+    public Sport putSport(Sport sport, @Named("id") int id) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
         try {
             connection = DriverManager.getConnection(System.getProperty("cloudsql"));
             statement = connection.createStatement();
-            player.setId(id);
-            resultSet = selectPlayer(id, statement);
+            sport.setId(id);
+            resultSet = selectSport(id, statement);
             if (resultSet.next()) {
-                updatePlayer(player, statement);
+                updateSport(sport, statement);
             } else {
-                insertPlayer(player, statement);
+                insertSport(sport, statement);
             }
         } catch (SQLException e) {
             throw (e);
@@ -244,7 +244,7 @@ public class PlayerResource {
                 connection.close();
             }
         }
-        return player;
+        return sport;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -253,34 +253,34 @@ public class PlayerResource {
 
     /**
      * POST
-     * This method creates an instance of Person with a new, unique ID
+     * This method creates an instance of Sport with a new, unique ID
      * number. We do this because POST is not idempotent, meaning that running
      * the same POST several times creates multiple objects with unique IDs but
      * otherwise having the same field values.
      * <p>
-     * The method creates a new, unique ID by querying the player table for the
+     * The method creates a new, unique ID by querying the sport table for the
      * largest ID and adding 1 to that. Using a DB sequence would be a better solution.
-     * This method creates an instance of Person with a new, unique ID.
+     * This method creates an instance of Sport with a new, unique ID.
      *
-     * @param player a JSON representation of the player to be created
-     * @return new player entity with a system-generated ID
+     * @param sport a JSON representation of the sport to be created
+     * @return new sport entity with a system-generated ID
      * @throws SQLException
      */
-    @ApiMethod(path = "player", httpMethod = POST)
-    public Player postPlayer(Player player) throws SQLException {
+    @ApiMethod(path = "sport", httpMethod = POST)
+    public Sport postSport(Sport sport) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
         try {
             connection = DriverManager.getConnection(System.getProperty("cloudsql"));
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT MAX(ID) FROM Player");
+            resultSet = statement.executeQuery("SELECT MAX(ID) FROM Sport");
             if (resultSet.next()) {
-                player.setId(resultSet.getInt(1) + 1);
+                sport.setId(resultSet.getInt(1) + 1);
             } else {
                 throw new RuntimeException("failed to find unique ID...");
             }
-            insertPlayer(player, statement);
+            insertSport(sport, statement);
         } catch (SQLException e) {
             throw (e);
         } finally {
@@ -294,7 +294,7 @@ public class PlayerResource {
                 connection.close();
             }
         }
-        return player;
+        return sport;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -303,22 +303,22 @@ public class PlayerResource {
 
     /**
      * DELETE
-     * This method deletes the instance of Person with a given ID, if it exists.
-     * If the player with the given ID doesn't exist, SQL won't delete anything.
+     * This method deletes the instance of Sport with a given ID, if it exists.
+     * If the sport with the given ID doesn't exist, SQL won't delete anything.
      * This makes DELETE idempotent.
      *
-     * @param id the ID for the player, assumed to be unique
-     * @return the deleted player, if any
+     * @param id the ID for the sport, assumed to be unique
+     * @return the deleted sport, if any
      * @throws SQLException
      */
-    @ApiMethod(path = "player/{id}", httpMethod = DELETE)
-    public void deletePlayer(@Named("id") int id) throws SQLException {
+    @ApiMethod(path = "sport/{id}", httpMethod = DELETE)
+    public void deleteSport(@Named("id") int id) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         try {
             connection = DriverManager.getConnection(System.getProperty("cloudsql"));
             statement = connection.createStatement();
-            deletePlayer(id, statement);
+            deleteSport(id, statement);
         } catch (SQLException e) {
             throw (e);
         } finally {
@@ -339,38 +339,40 @@ public class PlayerResource {
     /////////////////////////////////////////////////////////////////////////////////////////////
 
     /*
-     * This function gets the player with the given id using the given JDBC statement.
+     * This function gets the sport with the given id using the given JDBC statement.
      */
-    private ResultSet selectPlayer(int id, Statement statement) throws SQLException {
+    private ResultSet selectSport(int id, Statement statement) throws SQLException {
         return statement.executeQuery(
-                String.format("SELECT * FROM Player WHERE id=%d", id)
+                String.format("SELECT * FROM Sport WHERE id=%d", id)
         );
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////
 
+
     /*
-     * This function gets the players using the given JDBC statement.
+     * This function gets the sports using the given JDBC statement.
      */
-    private ResultSet selectPlayers(Statement statement) throws SQLException {
+    private ResultSet selectSports(Statement statement) throws SQLException {
         return statement.executeQuery(
-                "SELECT * FROM Player"
+                "SELECT * FROM Sport"
         );
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////
 
+
     /*
-     * This function modifies the given player using the given JDBC statement.
+     * This function modifies the given sport using the given JDBC statement.
      */
-    private void updatePlayer(Player player, Statement statement) throws SQLException {
+    private void updateSport(Sport sport, Statement statement) throws SQLException {
         statement.executeUpdate(
-                String.format("UPDATE Player SET emailAddress='%s', accountCreationDate=%s WHERE id=%d",
-                        player.getEmailAddress(),
-                        getValueStringOrNull(player.getAccountCreationDate()),
-                        player.getId()
+                String.format("UPDATE Sport SET type='%s', name=%s WHERE id=%d",
+                        sport.getType(),
+                        getValueStringOrNull(sport.getName()),
+                        sport.getId()
                 )
         );
     }
@@ -378,15 +380,16 @@ public class PlayerResource {
     /////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////
 
+
     /*
-     * This function inserts the given player using the given JDBC statement.
+     * This function inserts the given sport using the given JDBC statement.
      */
-    private void insertPlayer(Player player, Statement statement) throws SQLException {
+    private void insertSport(Sport sport, Statement statement) throws SQLException {
         statement.executeUpdate(
-                String.format("INSERT INTO Player VALUES (%d, '%s', %s)",
-                        player.getId(),
-                        player.getEmailAddress(),
-                        getValueStringOrNull(player.getAccountCreationDate())
+                String.format("INSERT INTO Sport VALUES (%d, '%s', %s)",
+                        sport.getId(),
+                        sport.getName(),
+                        getValueStringOrNull(sport.getType())
                 )
         );
     }
@@ -394,12 +397,13 @@ public class PlayerResource {
     /////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////
 
+
     /*
-     * This function deletes the player with the given id using the given JDBC statement.
+     * This function deletes the sport with the given id using the given JDBC statement.
      */
-    private void deletePlayer(int id, Statement statement) throws SQLException {
+    private void deleteSport(int id, Statement statement) throws SQLException {
         statement.executeUpdate(
-                String.format("DELETE FROM Player WHERE id=%d", id)
+                String.format("DELETE FROM Sport WHERE id=%d", id)
         );
     }
 
