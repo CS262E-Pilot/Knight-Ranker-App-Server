@@ -45,7 +45,7 @@ import static com.google.api.server.spi.config.ApiMethod.HttpMethod.DELETE;
 
 /**
  * This class implements a RESTful service for the player table of the monopoly database.
- * Only the player relation is supported, not the game or playergame relations.
+ * Only the player and sport relations are supported, not the match or follow relations.
  *
  * You can test the GET endpoints using a standard browser.
  *
@@ -53,7 +53,13 @@ import static com.google.api.server.spi.config.ApiMethod.HttpMethod.DELETE;
  *    https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/players
  *
  * % curl --request GET \
+ *    https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/sports
+ *
+ * % curl --request GET \
  *    https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/player/1
+ *
+ * % curl --request GET \
+ *    https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/sport/1
  *
  * You can test the full REST API using the following sequence of cURL commands (on Linux):
  * (Run get-players between each command to see the results.)
@@ -61,7 +67,7 @@ import static com.google.api.server.spi.config.ApiMethod.HttpMethod.DELETE;
  * // Add a new player (probably as unique generated ID #N).
  * % curl --request POST \
  *    --header "Content-Type: application/json" \
- *    --data '{"accountCreationDate":"test date...", "emailAddress":"test email..."}' \
+ *    --data '{"accountCreationDate":"2018-11-03 00:53:57.048546", "emailAddress":"test email..."}' \
  *    https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/player
  *
  * // Add a new sport (probably as unique generated ID #N).
@@ -73,22 +79,22 @@ import static com.google.api.server.spi.config.ApiMethod.HttpMethod.DELETE;
  * // Edit the new player (assuming ID #1).
  * % curl --request PUT \
  *    --header "Content-Type: application/json" \
- *    --data '{"accountCreationDate":"new test date...", "emailAddress":"new test email..."}' \
- *    https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/player/1
+ *    --data '{"accountCreationDate":"2019-11-03 00:53:57.048546", "emailAddress":"new test email..."}' \
+ *    https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/player/8
  *
  * // Edit the new sport (assuming ID #1).
  * % curl --request PUT \
  *    --header "Content-Type: application/json" \
  *    --data '{"name":"new test name...", "type":"new test type..."}' \
- *    https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/sport/1
+ *    https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/sport/5
  *
  * // Delete the new player (assuming ID #1).
  * % curl --request DELETE \
- *    https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/player/1
+ *    https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/player/8
  *
  * // Delete the new sport (assuming ID #1).
  * % curl --request DELETE \
- *    https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/sport/1
+ *    https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/sport/5
  */
 public class PlayerResource {
 
