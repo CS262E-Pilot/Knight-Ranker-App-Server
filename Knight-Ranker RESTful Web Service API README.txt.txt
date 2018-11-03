@@ -1,7 +1,13 @@
 Knight-Ranker RESTful Web Service API README.txt
 =======================================================================================
 Author: Joseph Jinn
-version 0.1 beta.
+version 0.2 beta.
+
+=======================================================================================
+ChangeLog:
+
+-Resolved how to use all CRUD operations in GitBash for windows (remove all forward slashes)
+
 =======================================================================================
 =======================================================================================
 Currently working CRUD commands and Endpoints:
@@ -11,11 +17,12 @@ Currently working CRUD commands and Endpoints:
 IMPORTANT NOTE: GET/DELETE work in Windows Command Shell but not PUT/POST (formatting issues)
 	-Remove all "\" forward slashes for these commands in Windows Command Shell
 
-IMPORTANT NOTE: PUT/POST work in GitBash for Windows but not GET/DELETE (shell build issues)
+IMPORTANT NOTE: GET/DELETE/PUT/POST work fine in GitBash for Windows as long as you remove all
+	forward slashes from the below commands.
 
 IMPORTANT NOTE: Results may depend on user's local machine and build/set-up for shells.
 
--Summary: Depending on which shell and how you set up that shell, you may or may not get
+Summary: Depending on which shell and how you set up that shell, you may or may not get
 	all CRUD operations working, as different shells requires different formats for
 	these queries.
 =======================================================================================

@@ -73,3 +73,10 @@ INSERT INTO Follow VALUES(1, 7, 4);
 INSERT INTO Follow VALUES(3, 6, 1);
 INSERT INTO Follow VALUES(3, 4, 2);
 INSERT INTO Follow VALUES(3, 3, 3);
+
+-- Added to test the Match relation
+
+INSERT INTO Match VALUES(1, 1, 1, 2, 1, 2, 1, NOW(), 1);
+INSERT INTO Match VALUES(2, 2, 3, 4, 3, 4, 3, NOW(), 1);
+INSERT INTO Match VALUES(3, 3, 5, 6, 5, 6, 5, NOW(), 1);
+INSERT INTO Match VALUES(4, 4, 1, 7, 1, 7, 7, NOW(), 1);
