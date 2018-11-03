@@ -8,6 +8,10 @@
 SELECT *
 FROM User;
 
+-- Retrieve the Player records
+SELECT *
+FROM Player;
+
 -- Retrieve the Sport records
 SELECT *
 FROM Sport;
