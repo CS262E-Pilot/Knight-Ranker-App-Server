@@ -1,5 +1,7 @@
 package edu.calvin.cs262.pilot.knight_ranker;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 import com.google.api.server.spi.config.*;
 
 import java.sql.Connection;
@@ -14,6 +16,10 @@ import static com.google.api.server.spi.config.ApiMethod.HttpMethod.GET;
 import static com.google.api.server.spi.config.ApiMethod.HttpMethod.PUT;
 import static com.google.api.server.spi.config.ApiMethod.HttpMethod.POST;
 import static com.google.api.server.spi.config.ApiMethod.HttpMethod.DELETE;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * This Java annotation specifies the general configuration of the Google Cloud endpoint API.
@@ -42,6 +48,10 @@ import static com.google.api.server.spi.config.ApiMethod.HttpMethod.DELETE;
                 )
         }
 )
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * This class implements a RESTful service for the player table of the monopoly database.
@@ -97,6 +107,10 @@ import static com.google.api.server.spi.config.ApiMethod.HttpMethod.DELETE;
  *    https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/sport/5
  */
 public class PlayerResource {
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * GET
@@ -182,6 +196,99 @@ public class PlayerResource {
 
     /**
      * GET
+     * This method gets the full list of matches from the Match table.
+     *
+     * @return JSON-formatted list of match records (based on a root JSON tag of "items")
+     * @throws SQLException
+     */
+    @ApiMethod(path = "matches", httpMethod = GET)
+    public List<Match> getMatches() throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        List<Match> result = new ArrayList<Match>();
+        try {
+            connection = DriverManager.getConnection(System.getProperty("cloudsql"));
+            statement = connection.createStatement();
+            resultSet = selectMatches(statement);
+            while (resultSet.next()) {
+                Match p = new Match(
+                        Integer.parseInt(resultSet.getString(1)),
+                        Integer.parseInt(resultSet.getString(2)),
+                        Integer.parseInt(resultSet.getString(3)),
+                        Integer.parseInt(resultSet.getString(4)),
+                        Integer.parseInt(resultSet.getString(5)),
+                        Integer.parseInt(resultSet.getString(6)),
+                        Integer.parseInt(resultSet.getString(7)),
+                        resultSet.getString(8),
+                        resultSet.getString(9)
+                );
+                result.add(p);
+            }
+        } catch (SQLException e) {
+            throw (e);
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return result;
+    }
+
+    /**
+     * GET
+     * This method gets the full list of follows from the Follow table.
+     *
+     * @return JSON-formatted list of follow records (based on a root JSON tag of "items")
+     * @throws SQLException
+     */
+    @ApiMethod(path = "follows", httpMethod = GET)
+    public List<Follow> getFollows() throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        List<Follow> result = new ArrayList<Follow>();
+        try {
+            connection = DriverManager.getConnection(System.getProperty("cloudsql"));
+            statement = connection.createStatement();
+            resultSet = selectFollows(statement);
+            while (resultSet.next()) {
+                Follow p = new Follow(
+                        Integer.parseInt(resultSet.getString(1)),
+                        Integer.parseInt(resultSet.getString(2)),
+                        Integer.parseInt(resultSet.getString(3)),
+                        Integer.parseInt(resultSet.getString(4))
+                );
+                result.add(p);
+            }
+        } catch (SQLException e) {
+            throw (e);
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return result;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * GET
      * This method gets the player from the Player table with the given ID.
      *
      * @param id the ID of the requested player
@@ -263,6 +370,99 @@ public class PlayerResource {
     }
 
     /**
+     * GET
+     * This method gets the sport from the Match table with the given ID.
+     *
+     * @param id the ID of the requested match
+     * @return if the match exists, a JSON-formatted sport record, otherwise an invalid/empty JSON entity
+     * @throws SQLException
+     */
+    @ApiMethod(path = "match/{id}", httpMethod = GET)
+    public Match getMatch(@Named("id") int id) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        Match result = null;
+        try {
+            connection = DriverManager.getConnection(System.getProperty("cloudsql"));
+            statement = connection.createStatement();
+            resultSet = selectMatch(id, statement);
+            if (resultSet.next()) {
+                result = new Match(
+                        Integer.parseInt(resultSet.getString(1)),
+                        Integer.parseInt(resultSet.getString(2)),
+                        Integer.parseInt(resultSet.getString(3)),
+                        Integer.parseInt(resultSet.getString(4)),
+                        Integer.parseInt(resultSet.getString(5)),
+                        Integer.parseInt(resultSet.getString(6)),
+                        Integer.parseInt(resultSet.getString(7)),
+                        resultSet.getString(8),
+                        resultSet.getString(9)
+                );
+            }
+        } catch (SQLException e) {
+            throw (e);
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return result;
+    }
+
+    /**
+     * GET
+     * This method gets the follow from the Follow table with the given id.
+     *
+     * @param id the id of the requested follow
+     * @return if the follow exists, a JSON-formatted sport record, otherwise an invalid/empty JSON entity
+     * @throws SQLException
+     */
+    @ApiMethod(path = "follow/{id}", httpMethod = GET)
+    public Follow getFollow(@Named("id") int id) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        Follow result = null;
+        try {
+            connection = DriverManager.getConnection(System.getProperty("cloudsql"));
+            statement = connection.createStatement();
+            resultSet = selectFollow(id, statement);
+            if (resultSet.next()) {
+                result = new Follow(
+                        Integer.parseInt(resultSet.getString(1)),
+                        Integer.parseInt(resultSet.getString(2)),
+                        Integer.parseInt(resultSet.getString(3)),
+                        Integer.parseInt(resultSet.getString(4))
+                );
+            }
+        } catch (SQLException e) {
+            throw (e);
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return result;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
      * PUT
      * This method creates/updates an instance of Person with a given ID.
      * If the player doesn't exist, create a new player using the given field values.
@@ -330,7 +530,7 @@ public class PlayerResource {
             connection = DriverManager.getConnection(System.getProperty("cloudsql"));
             statement = connection.createStatement();
             sport.setId(id);
-            resultSet = selectPlayer(id, statement);
+            resultSet = selectSport(id, statement);
             if (resultSet.next()) {
                 updateSport(sport, statement);
             } else {
@@ -351,6 +551,100 @@ public class PlayerResource {
         }
         return sport;
     }
+
+    /**
+     * PUT
+     * This method creates/updates an instance of Match with a given ID.
+     * If the match doesn't exist, create a new match using the given field values.
+     * If the match already exists, update the fields using the new match field values.
+     * We do this because PUT is idempotent, meaning that running the same PUT several
+     * times is the same as running it exactly once.
+     * Any match ID value set in the passed match data is ignored.
+     *
+     * @param id    the ID for the match, assumed to be unique
+     * @param match a JSON representation of the match; The id parameter overrides any id specified here.
+     * @return new/updated match entity
+     * @throws SQLException
+     */
+    @ApiMethod(path = "match/{id}", httpMethod = PUT)
+    public Match putMatch(Match match, @Named("id") int id) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = DriverManager.getConnection(System.getProperty("cloudsql"));
+            statement = connection.createStatement();
+            match.setID(id);
+            resultSet = selectMatch(id, statement);
+            if (resultSet.next()) {
+                updateMatch(match, statement);
+            } else {
+                insertMatch(match, statement);
+            }
+        } catch (SQLException e) {
+            throw (e);
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return match;
+    }
+
+    /**
+     * PUT
+     * This method creates/updates an instance of Follow with a given ID.
+     * If the follow doesn't exist, create a new follow using the given field values.
+     * If the follow already exists, update the fields using the new follow field values.
+     * We do this because PUT is idempotent, meaning that running the same PUT several
+     * times is the same as running it exactly once.
+     * Any follow ID value set in the passed follow data is ignored.
+     *
+     * @param id    the ID for the follow, assumed to be unique
+     * @param follow a JSON representation of the follow; The id parameter overrides any id specified here.
+     * @return new/updated follow entity
+     * @throws SQLException
+     */
+    @ApiMethod(path = "follow/{id}", httpMethod = PUT)
+    public Follow putFollow(Follow follow, @Named("id") int id) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = DriverManager.getConnection(System.getProperty("cloudsql"));
+            statement = connection.createStatement();
+            follow.setID(id);
+            resultSet = selectFollow(id, statement);
+            if (resultSet.next()) {
+                updateFollow(follow, statement);
+            } else {
+                insertFollow(follow, statement);
+            }
+        } catch (SQLException e) {
+            throw (e);
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return follow;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * POST
@@ -445,6 +739,102 @@ public class PlayerResource {
     }
 
     /**
+     * POST
+     * This method creates an instance of Match with a new, unique ID
+     * number. We do this because POST is not idempotent, meaning that running
+     * the same POST several times creates multiple objects with unique IDs but
+     * otherwise having the same field values.
+     * <p>
+     * The method creates a new, unique ID by querying the match table for the
+     * largest ID and adding 1 to that. Using a DB sequence would be a better solution.
+     * This method creates an instance of Match with a new, unique ID.
+     *
+     * @param match a JSON representation of the match to be created
+     * @return new match entity with a system-generated ID
+     * @throws SQLException
+     */
+    @ApiMethod(path = "match", httpMethod = POST)
+    public Match postMatch(Match match) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = DriverManager.getConnection(System.getProperty("cloudsql"));
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT MAX(ID) FROM Match");
+            if (resultSet.next()) {
+                match.setID(resultSet.getInt(1) + 1);
+            } else {
+                throw new RuntimeException("failed to find unique ID...");
+            }
+            insertMatch(match, statement);
+        } catch (SQLException e) {
+            throw (e);
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return match;
+    }
+
+    /**
+     * POST
+     * This method creates an instance of Follow with a new, unique ID
+     * number. We do this because POST is not idempotent, meaning that running
+     * the same POST several times creates multiple objects with unique IDs but
+     * otherwise having the same field values.
+     * <p>
+     * The method creates a new, unique ID by querying the follow table for the
+     * largest ID and adding 1 to that. Using a DB sequence would be a better solution.
+     * This method creates an instance of Follow with a new, unique ID.
+     *
+     * @param follow a JSON representation of the follow to be created
+     * @return new follow entity with a system-generated ID
+     * @throws SQLException
+     */
+    @ApiMethod(path = "follow", httpMethod = POST)
+    public Follow postFollow(Follow follow) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = DriverManager.getConnection(System.getProperty("cloudsql"));
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT MAX(ID) FROM Follow");
+            if (resultSet.next()) {
+                follow.setID(resultSet.getInt(1) + 1);
+            } else {
+                throw new RuntimeException("failed to find unique ID...");
+            }
+            insertFollow(follow, statement);
+        } catch (SQLException e) {
+            throw (e);
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return follow;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
      * DELETE
      * This method deletes the instance of Person with a given ID, if it exists.
      * If the player with the given ID doesn't exist, SQL won't delete anything.
@@ -505,8 +895,71 @@ public class PlayerResource {
     }
 
     /**
+     * DELETE
+     * This method deletes the instance of Match with a given ID, if it exists.
+     * If the match with the given ID doesn't exist, SQL won't delete anything.
+     * This makes DELETE idempotent.
+     *
+     * @param id the ID for the match, assumed to be unique
+     * @return the deleted match, if any
+     * @throws SQLException
+     */
+    @ApiMethod(path = "match/{id}", httpMethod = DELETE)
+    public void deleteMatch(@Named("id") int id) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = DriverManager.getConnection(System.getProperty("cloudsql"));
+            statement = connection.createStatement();
+            deleteMatch(id, statement);
+        } catch (SQLException e) {
+            throw (e);
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+    }
+
+    /**
+     * DELETE
+     * This method deletes the instance of Follow with a given ID, if it exists.
+     * If the follow with the given ID doesn't exist, SQL won't delete anything.
+     * This makes DELETE idempotent.
+     *
+     * @param id the ID for the follow, assumed to be unique
+     * @return the deleted follow, if any
+     * @throws SQLException
+     */
+    @ApiMethod(path = "follow/{id}", httpMethod = DELETE)
+    public void deleteFollow(@Named("id") int id) throws SQLException {
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = DriverManager.getConnection(System.getProperty("cloudsql"));
+            statement = connection.createStatement();
+            deleteFollow(id, statement);
+        } catch (SQLException e) {
+            throw (e);
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+    }
+
+    /**
      * SQL Utility Functions
      *********************************************/
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////
 
     /*
      * This function gets the player with the given id using the given JDBC statement.
@@ -518,13 +971,34 @@ public class PlayerResource {
     }
 
     /*
-     * This function gets the player with the given id using the given JDBC statement.
+     * This function gets the sport with the given id using the given JDBC statement.
      */
     private ResultSet selectSport(int id, Statement statement) throws SQLException {
         return statement.executeQuery(
                 String.format("SELECT * FROM Sport WHERE id=%d", id)
         );
     }
+
+    /*
+     * This function gets the match with the given id using the given JDBC statement.
+     */
+    private ResultSet selectMatch(int id, Statement statement) throws SQLException {
+        return statement.executeQuery(
+                String.format("SELECT * FROM Match WHERE id=%d", id)
+        );
+    }
+
+    /*
+     * This function gets the follow with the given id using the given JDBC statement.
+     */
+    private ResultSet selectFollow(int id, Statement statement) throws SQLException {
+        return statement.executeQuery(
+                String.format("SELECT * FROM Follow WHERE id=%d", id)
+        );
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////
 
     /*
      * This function gets the players using the given JDBC statement.
@@ -543,6 +1017,27 @@ public class PlayerResource {
                 "SELECT * FROM Sport"
         );
     }
+
+    /*
+     * This function gets the matches using the given JDBC statement.
+     */
+    private ResultSet selectMatches(Statement statement) throws SQLException {
+        return statement.executeQuery(
+                "SELECT * FROM Match"
+        );
+    }
+
+    /*
+     * This function gets the follows using the given JDBC statement.
+     */
+    private ResultSet selectFollows(Statement statement) throws SQLException {
+        return statement.executeQuery(
+                "SELECT * FROM Follow"
+        );
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////
 
     /*
      * This function modifies the given player using the given JDBC statement.
@@ -571,6 +1066,44 @@ public class PlayerResource {
     }
 
     /*
+     * This function modifies the given match using the given JDBC statement.
+     */
+    private void updateMatch(Match match, Statement statement) throws SQLException {
+        statement.executeUpdate(
+                String.format("UPDATE Match SET verified='%s', time='%s', winner=%d, " +
+                                "PlayerTwoScore=%d, PlayerOneScore=%d, PlayerTwoID=%d, PlayerOneID=%d, " +
+                                "sportID=%d WHERE id=%d",
+                        match.getVerified(),
+                        match.getTime(),
+                        match.getWinner(),
+                        match.getPlayerTwoScore(),
+                        match.getPlayerOneScore(),
+                        match.getPlayerTwoID(),
+                        match.getPlayerOneID(),
+                        match.getSportID(),
+                        match.getID()
+                )
+        );
+    }
+
+    /*
+     * This function modifies the given follow using the given JDBC statement.
+     */
+    private void updateFollow(Follow follow, Statement statement) throws SQLException {
+        statement.executeUpdate(
+                String.format("UPDATE Follow SET rank=%d, PlayerID=%d, sportID=%d WHERE id=%d",
+                        follow.getRank(),
+                        follow.getPlayerID(),
+                        follow.getSportID(),
+                        follow.getID()
+                )
+        );
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+    /*
      * This function inserts the given player using the given JDBC statement.
      */
     private void insertPlayer(Player player, Statement statement) throws SQLException {
@@ -597,6 +1130,42 @@ public class PlayerResource {
     }
 
     /*
+     * This function inserts the given match using the given JDBC statement.
+     */
+    private void insertMatch(Match match, Statement statement) throws SQLException {
+        statement.executeUpdate(
+                String.format("INSERT INTO Match VALUES (%d, %d, %d, %d, %d, %d, %d, '%s', '%s')",
+                        match.getID(),
+                        match.getSportID(),
+                        match.getPlayerOneID(),
+                        match.getPlayerTwoID(),
+                        match.getPlayerOneScore(),
+                        match.getPlayerTwoScore(),
+                        match.getWinner(),
+                        match.getTime(),
+                        match.getVerified()
+                )
+        );
+    }
+
+    /*
+     * This function inserts the given follow using the given JDBC statement.
+     */
+    private void insertFollow(Follow follow, Statement statement) throws SQLException {
+        statement.executeUpdate(
+                String.format("INSERT INTO Follow VALUES (%d, %d, %d, %d)",
+                        follow.getID(),
+                        follow.getSportID(),
+                        follow.getPlayerID(),
+                        follow.getRank()
+                )
+        );
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+    /*
      * This function deletes the player with the given id using the given JDBC statement.
      */
     private void deletePlayer(int id, Statement statement) throws SQLException {
@@ -615,6 +1184,27 @@ public class PlayerResource {
     }
 
     /*
+     * This function deletes the match with the given id using the given JDBC statement.
+     */
+    private void deleteMatch(int id, Statement statement) throws SQLException {
+        statement.executeUpdate(
+                String.format("DELETE FROM Match WHERE id=%d", id)
+        );
+    }
+
+    /*
+     * This function deletes the follow with the given id using the given JDBC statement.
+     */
+    private void deleteFollow(int id, Statement statement) throws SQLException {
+        statement.executeUpdate(
+                String.format("DELETE FROM Follow WHERE id=%d", id)
+        );
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+    /*
      * This function returns a value literal suitable for an SQL INSERT/UPDATE command.
      * If the value is NULL, it returns an unquoted NULL, otherwise it returns the quoted value.
      */
@@ -626,4 +1216,6 @@ public class PlayerResource {
         }
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////
 }
