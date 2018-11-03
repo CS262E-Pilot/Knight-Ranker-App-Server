@@ -1,7 +1,11 @@
 Short Guide on how to re-deploy to Google Cloud Platform
 ======================================================================
 Author: Joseph Jinn
-version 1.0
+version 1.1
+======================================================================
+Changelog:
+
+-minor edit in how to test if API works.
 ======================================================================
 ======================================================================
 Link to Server GitHub Repository:
@@ -97,7 +101,7 @@ PS D:\Dropbox\CS262_TeamE_Server\KnightRanker_RESTful_Prototype>
 ======================================================================
 As of the writing of v1.0 of this guide, you can test if your API works by:
 
-https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/INSERT API METHOD PATH HERE
+https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/INSERT ENDPOINT HERE
 
 Example: (say we have the method below)
 
@@ -111,6 +115,7 @@ Note the "players" portion of the URL; this is obtained from:
 
 In other words, the (path = "SOME STRING OR ANOTHER"
 
+Note: For more in-depth instructions, refer to the Comments Header in PlayerResource.java
 ======================================================================
 
   /**
