@@ -84,11 +84,11 @@ public class Match {
         this.myWinner = winner;
     }
 
-    public String geTime() {
+    public String getTime() {
         return this.myTime;
     }
 
-    public void seTime(String time) {
+    public void setTime(String time) {
         this.myTime = time;
     }
 
