@@ -106,7 +106,7 @@ import static com.google.api.server.spi.config.ApiMethod.HttpMethod.DELETE;
  * % curl --request DELETE \
  *    https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/sport/5
  */
-public class PlayerResource {
+public class FollowResource {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,26 +114,27 @@ public class PlayerResource {
 
     /**
      * GET
-     * This method gets the full list of players from the Player table.
+     * This method gets the full list of follows from the Follow table.
      *
-     * @return JSON-formatted list of player records (based on a root JSON tag of "items")
+     * @return JSON-formatted list of follow records (based on a root JSON tag of "items")
      * @throws SQLException
      */
-    @ApiMethod(path = "players", httpMethod = GET)
-    public List<Player> getPlayers() throws SQLException {
+    @ApiMethod(path = "follows", httpMethod = GET)
+    public List<Follow> getFollows() throws SQLException {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
-        List<Player> result = new ArrayList<Player>();
+        List<Follow> result = new ArrayList<Follow>();
         try {
             connection = DriverManager.getConnection(System.getProperty("cloudsql"));
             statement = connection.createStatement();
-            resultSet = selectPlayers(statement);
+            resultSet = selectFollows(statement);
             while (resultSet.next()) {
-                Player p = new Player(
+                Follow p = new Follow(
                         Integer.parseInt(resultSet.getString(1)),
-                        resultSet.getString(2),
-                        resultSet.getString(3)
+                        Integer.parseInt(resultSet.getString(2)),
+                        Integer.parseInt(resultSet.getString(3)),
+                        Integer.parseInt(resultSet.getString(4))
                 );
                 result.add(p);
             }
@@ -159,27 +160,28 @@ public class PlayerResource {
 
     /**
      * GET
-     * This method gets the player from the Player table with the given ID.
+     * This method gets the follow from the Follow table with the given id.
      *
-     * @param id the ID of the requested player
-     * @return if the player exists, a JSON-formatted player record, otherwise an invalid/empty JSON entity
+     * @param id the id of the requested follow
+     * @return if the follow exists, a JSON-formatted sport record, otherwise an invalid/empty JSON entity
      * @throws SQLException
      */
-    @ApiMethod(path = "player/{id}", httpMethod = GET)
-    public Player getPlayer(@Named("id") int id) throws SQLException {
+    @ApiMethod(path = "follow/{id}", httpMethod = GET)
+    public Follow getFollow(@Named("id") int id) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
-        Player result = null;
+        Follow result = null;
         try {
             connection = DriverManager.getConnection(System.getProperty("cloudsql"));
             statement = connection.createStatement();
-            resultSet = selectPlayer(id, statement);
+            resultSet = selectFollow(id, statement);
             if (resultSet.next()) {
-                result = new Player(
+                result = new Follow(
                         Integer.parseInt(resultSet.getString(1)),
-                        resultSet.getString(2),
-                        resultSet.getString(3)
+                        Integer.parseInt(resultSet.getString(2)),
+                        Integer.parseInt(resultSet.getString(3)),
+                        Integer.parseInt(resultSet.getString(4))
                 );
             }
         } catch (SQLException e) {
@@ -204,32 +206,32 @@ public class PlayerResource {
 
     /**
      * PUT
-     * This method creates/updates an instance of Person with a given ID.
-     * If the player doesn't exist, create a new player using the given field values.
-     * If the player already exists, update the fields using the new player field values.
+     * This method creates/updates an instance of Follow with a given ID.
+     * If the follow doesn't exist, create a new follow using the given field values.
+     * If the follow already exists, update the fields using the new follow field values.
      * We do this because PUT is idempotent, meaning that running the same PUT several
      * times is the same as running it exactly once.
-     * Any player ID value set in the passed player data is ignored.
+     * Any follow ID value set in the passed follow data is ignored.
      *
-     * @param id     the ID for the player, assumed to be unique
-     * @param player a JSON representation of the player; The id parameter overrides any id specified here.
-     * @return new/updated player entity
+     * @param id     the ID for the follow, assumed to be unique
+     * @param follow a JSON representation of the follow; The id parameter overrides any id specified here.
+     * @return new/updated follow entity
      * @throws SQLException
      */
-    @ApiMethod(path = "player/{id}", httpMethod = PUT)
-    public Player putPlayer(Player player, @Named("id") int id) throws SQLException {
+    @ApiMethod(path = "follow/{id}", httpMethod = PUT)
+    public Follow putFollow(Follow follow, @Named("id") int id) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
         try {
             connection = DriverManager.getConnection(System.getProperty("cloudsql"));
             statement = connection.createStatement();
-            player.setId(id);
-            resultSet = selectPlayer(id, statement);
+            follow.setID(id);
+            resultSet = selectFollow(id, statement);
             if (resultSet.next()) {
-                updatePlayer(player, statement);
+                updateFollow(follow, statement);
             } else {
-                insertPlayer(player, statement);
+                insertFollow(follow, statement);
             }
         } catch (SQLException e) {
             throw (e);
@@ -244,7 +246,7 @@ public class PlayerResource {
                 connection.close();
             }
         }
-        return player;
+        return follow;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -253,34 +255,34 @@ public class PlayerResource {
 
     /**
      * POST
-     * This method creates an instance of Person with a new, unique ID
+     * This method creates an instance of Follow with a new, unique ID
      * number. We do this because POST is not idempotent, meaning that running
      * the same POST several times creates multiple objects with unique IDs but
      * otherwise having the same field values.
      * <p>
-     * The method creates a new, unique ID by querying the player table for the
+     * The method creates a new, unique ID by querying the follow table for the
      * largest ID and adding 1 to that. Using a DB sequence would be a better solution.
-     * This method creates an instance of Person with a new, unique ID.
+     * This method creates an instance of Follow with a new, unique ID.
      *
-     * @param player a JSON representation of the player to be created
-     * @return new player entity with a system-generated ID
+     * @param follow a JSON representation of the follow to be created
+     * @return new follow entity with a system-generated ID
      * @throws SQLException
      */
-    @ApiMethod(path = "player", httpMethod = POST)
-    public Player postPlayer(Player player) throws SQLException {
+    @ApiMethod(path = "follow", httpMethod = POST)
+    public Follow postFollow(Follow follow) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
         try {
             connection = DriverManager.getConnection(System.getProperty("cloudsql"));
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT MAX(ID) FROM Player");
+            resultSet = statement.executeQuery("SELECT MAX(ID) FROM Follow");
             if (resultSet.next()) {
-                player.setId(resultSet.getInt(1) + 1);
+                follow.setID(resultSet.getInt(1) + 1);
             } else {
                 throw new RuntimeException("failed to find unique ID...");
             }
-            insertPlayer(player, statement);
+            insertFollow(follow, statement);
         } catch (SQLException e) {
             throw (e);
         } finally {
@@ -294,7 +296,7 @@ public class PlayerResource {
                 connection.close();
             }
         }
-        return player;
+        return follow;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -303,22 +305,22 @@ public class PlayerResource {
 
     /**
      * DELETE
-     * This method deletes the instance of Person with a given ID, if it exists.
-     * If the player with the given ID doesn't exist, SQL won't delete anything.
+     * This method deletes the instance of Follow with a given ID, if it exists.
+     * If the follow with the given ID doesn't exist, SQL won't delete anything.
      * This makes DELETE idempotent.
      *
-     * @param id the ID for the player, assumed to be unique
-     * @return the deleted player, if any
+     * @param id the ID for the follow, assumed to be unique
+     * @return the deleted follow, if any
      * @throws SQLException
      */
-    @ApiMethod(path = "player/{id}", httpMethod = DELETE)
-    public void deletePlayer(@Named("id") int id) throws SQLException {
+    @ApiMethod(path = "follow/{id}", httpMethod = DELETE)
+    public void deleteFollow(@Named("id") int id) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         try {
             connection = DriverManager.getConnection(System.getProperty("cloudsql"));
             statement = connection.createStatement();
-            deletePlayer(id, statement);
+            deleteFollow(id, statement);
         } catch (SQLException e) {
             throw (e);
         } finally {
@@ -339,11 +341,11 @@ public class PlayerResource {
     /////////////////////////////////////////////////////////////////////////////////////////////
 
     /*
-     * This function gets the player with the given id using the given JDBC statement.
+     * This function gets the follow with the given id using the given JDBC statement.
      */
-    private ResultSet selectPlayer(int id, Statement statement) throws SQLException {
+    private ResultSet selectFollow(int id, Statement statement) throws SQLException {
         return statement.executeQuery(
-                String.format("SELECT * FROM Player WHERE id=%d", id)
+                String.format("SELECT * FROM Follow WHERE id=%d", id)
         );
     }
 
@@ -351,11 +353,11 @@ public class PlayerResource {
     /////////////////////////////////////////////////////////////////////////////////////////////
 
     /*
-     * This function gets the players using the given JDBC statement.
+     * This function gets the follows using the given JDBC statement.
      */
-    private ResultSet selectPlayers(Statement statement) throws SQLException {
+    private ResultSet selectFollows(Statement statement) throws SQLException {
         return statement.executeQuery(
-                "SELECT * FROM Player"
+                "SELECT * FROM Follow"
         );
     }
 
@@ -363,14 +365,15 @@ public class PlayerResource {
     /////////////////////////////////////////////////////////////////////////////////////////////
 
     /*
-     * This function modifies the given player using the given JDBC statement.
+     * This function modifies the given follow using the given JDBC statement.
      */
-    private void updatePlayer(Player player, Statement statement) throws SQLException {
+    private void updateFollow(Follow follow, Statement statement) throws SQLException {
         statement.executeUpdate(
-                String.format("UPDATE Player SET emailAddress='%s', accountCreationDate=%s WHERE id=%d",
-                        player.getEmailAddress(),
-                        getValueStringOrNull(player.getAccountCreationDate()),
-                        player.getId()
+                String.format("UPDATE Follow SET rank=%d, PlayerID=%d, sportID=%d WHERE id=%d",
+                        follow.getRank(),
+                        follow.getPlayerID(),
+                        follow.getSportID(),
+                        follow.getID()
                 )
         );
     }
@@ -379,14 +382,15 @@ public class PlayerResource {
     /////////////////////////////////////////////////////////////////////////////////////////////
 
     /*
-     * This function inserts the given player using the given JDBC statement.
+     * This function inserts the given follow using the given JDBC statement.
      */
-    private void insertPlayer(Player player, Statement statement) throws SQLException {
+    private void insertFollow(Follow follow, Statement statement) throws SQLException {
         statement.executeUpdate(
-                String.format("INSERT INTO Player VALUES (%d, '%s', %s)",
-                        player.getId(),
-                        player.getEmailAddress(),
-                        getValueStringOrNull(player.getAccountCreationDate())
+                String.format("INSERT INTO Follow VALUES (%d, %d, %d, %d)",
+                        follow.getID(),
+                        follow.getSportID(),
+                        follow.getPlayerID(),
+                        follow.getRank()
                 )
         );
     }
@@ -395,11 +399,11 @@ public class PlayerResource {
     /////////////////////////////////////////////////////////////////////////////////////////////
 
     /*
-     * This function deletes the player with the given id using the given JDBC statement.
+     * This function deletes the follow with the given id using the given JDBC statement.
      */
-    private void deletePlayer(int id, Statement statement) throws SQLException {
+    private void deleteFollow(int id, Statement statement) throws SQLException {
         statement.executeUpdate(
-                String.format("DELETE FROM Player WHERE id=%d", id)
+                String.format("DELETE FROM Follow WHERE id=%d", id)
         );
     }
 
