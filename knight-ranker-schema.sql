@@ -43,27 +43,27 @@ CREATE TABLE Sport (
 	type varchar(50)
 );
 
-CREATE TABLE Match (
-	ID SERIAL PRIMARY KEY,
-	sportID integer REFERENCES Sport(ID),
-	PlayerOneID integer REFERENCES Player(ID),
-	PlayerTwoID integer REFERENCES Player(ID),
-	PlayerOneScore integer REFERENCES Player(ID),
-	PlayerTwoScore integer REFERENCES Player(ID),
-	winner integer REFERENCES Player(ID),
-	time timestamp,
-	verified boolean
-);
+-- CREATE TABLE Match (
+-- 	ID SERIAL PRIMARY KEY,
+-- 	sportID integer REFERENCES Sport(ID),
+-- 	PlayerOneID integer REFERENCES Player(ID),
+-- 	PlayerTwoID integer REFERENCES Player(ID),
+-- 	PlayerOneScore integer REFERENCES Player(ID),
+-- 	PlayerTwoScore integer REFERENCES Player(ID),
+-- 	winner integer REFERENCES Player(ID),
+-- 	time timestamp,
+-- 	verified boolean
+-- );
 
--- Modified to use a primary key for RESTful API CRUD Update method.
--- NOTE: DO NOT REMOVE PRIMARY KEY OR THE CRUD OPS WILL BREAK
--- (I'd have to renovate the methods)
-CREATE TABLE Follow (
-	ID integer PRIMARY KEY,
-	sportID integer REFERENCES Sport(ID),
-	PlayerID integer REFERENCES Player(ID),
-	rank integer
-);
+-- -- Modified to use a primary key for RESTful API CRUD Update method.
+-- -- NOTE: DO NOT REMOVE PRIMARY KEY OR THE CRUD OPS WILL BREAK
+-- -- (I'd have to renovate the methods)
+-- CREATE TABLE Follow (
+-- 	ID integer PRIMARY KEY,
+-- 	sportID integer REFERENCES Sport(ID),
+-- 	PlayerID integer REFERENCES Player(ID),
+-- 	rank integer
+-- );
 
 -----------------------------------------------------------------------------
 -----------------------------------------------------------------------------
@@ -76,24 +76,24 @@ CREATE TABLE Follow (
 -----------------------------------------------------------------------------
 -----------------------------------------------------------------------------
 
--- CREATE TABLE Match (
--- 	ID SERIAL PRIMARY KEY,
--- 	sportID integer,
--- 	PlayerOneID integer,
--- 	PlayerTwoID integer,
--- 	PlayerOneScore integer,
--- 	PlayerTwoScore integer,
--- 	winner integer,
--- 	time timestamp,
--- 	verified boolean
--- );
+CREATE TABLE Match (
+	ID SERIAL PRIMARY KEY,
+	sportID integer,
+	PlayerOneID integer,
+	PlayerTwoID integer,
+	PlayerOneScore integer,
+	PlayerTwoScore integer,
+	winner integer,
+	time timestamp,
+	verified boolean
+);
 
--- CREATE TABLE Follow (
--- 	ID integer PRIMARY KEY,
--- 	sportID integer,
--- 	PlayerID integer,
--- 	rank integer
--- );
+CREATE TABLE Follow (
+	ID integer PRIMARY KEY,
+	sportID integer,
+	PlayerID integer,
+	rank integer
+);
 
 -----------------------------------------------------------------------------
 -----------------------------------------------------------------------------
