@@ -15,10 +15,10 @@ public class Sport {
         // The JSON marshaller used by Endpoints requires this default constructor.
     }
 
-    public Sport(int id, String type, String name) {
+    public Sport(int id, String name, String type) {
         this.id = id;
-        this.type = type;
         this.name = name;
+        this.type = type;
     }
 
     public int getId() {
@@ -29,14 +29,6 @@ public class Sport {
         this.id = id;
     }
 
-    public String getType() {
-        return this.type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public String getName() {
         return this.name;
     }
@@ -45,4 +37,11 @@ public class Sport {
         this.name = name;
     }
 
+    public String getType() {
+        return this.type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }
