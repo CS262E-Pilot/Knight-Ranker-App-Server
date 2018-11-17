@@ -23,47 +23,68 @@
 DROP TABLE IF EXISTS Player CASCADE;
 DROP TABLE IF EXISTS Sport CASCADE;
 DROP TABLE IF EXISTS Match CASCADE;
-DROP TABLE IF EXISTS Follow CASCADE;
+DROP TABLE IF EXISTS SportRank CASCADE;
+
 
 -----------------------------------------------------------------------------
+-- ID: SERIAL is used to auto-increment the ID
+-- emailAddress: email of the player
+-- accountCreationDate: when the player's account was made
+-- playerName: the name or gamer tag the person wants to be known by
 -----------------------------------------------------------------------------
------------------------------------------------------------------------------
-
--- Create the schema
--- SERIAL type creates a unique int value, increments the int value from the last one made
 CREATE TABLE Player (
 	ID SERIAL PRIMARY KEY,
 	emailAddress varchar(254) NOT NULL,
-	accountCreationDate timestamp
+	accountCreationDate timestamp,
+	playerName varchar(64)
 );
 
+-----------------------------------------------------------------------------
+-- ID: SERIAL is used to auto-increment the ID
+-- name: name of the sport
+-- type: the type of the sport (i.e. indoor, outdoor, eSport)
+-----------------------------------------------------------------------------
 CREATE TABLE Sport (
 	ID SERIAL PRIMARY KEY,
 	name varchar(50),
 	type varchar(50)
 );
 
--- CREATE TABLE Match (
--- 	ID SERIAL PRIMARY KEY,
--- 	sportID integer REFERENCES Sport(ID),
--- 	PlayerOneID integer REFERENCES Player(ID),
--- 	PlayerTwoID integer REFERENCES Player(ID),
--- 	PlayerOneScore integer REFERENCES Player(ID),
--- 	PlayerTwoScore integer REFERENCES Player(ID),
--- 	winner integer REFERENCES Player(ID),
--- 	time timestamp,
--- 	verified boolean
--- );
+-----------------------------------------------------------------------------
+-- ID: SERIAL is used to auto-increment the ID
+-- sportID: the ID of the sport that was played
+-- playerOneID: ID of the first player
+-- playerTwoID: ID of the second player
+-- playerOneScore: score of the first player
+-- playerTwoScore: score of the second player
+-- winner: the player who won, stored because some games have weird ways of scoring
+-- time: when the game was played
+-- verified: if the match has been verified by both player
+-----------------------------------------------------------------------------
+CREATE TABLE Match (
+	ID SERIAL PRIMARY KEY,
+	sportID integer REFERENCES Sport(ID),
+	playerOneID integer REFERENCES Player(ID),
+	playerTwoID integer REFERENCES Player(ID),
+	playerOneScore integer REFERENCES Player(ID),
+	playerTwoScore integer REFERENCES Player(ID),
+	winner integer REFERENCES Player(ID),
+	time timestamp,
+	verified boolean
+);
 
--- -- Modified to use a primary key for RESTful API CRUD Update method.
--- -- NOTE: DO NOT REMOVE PRIMARY KEY OR THE CRUD OPS WILL BREAK
--- -- (I'd have to renovate the methods)
--- CREATE TABLE Follow (
--- 	ID integer PRIMARY KEY,
--- 	sportID integer REFERENCES Sport(ID),
--- 	PlayerID integer REFERENCES Player(ID),
--- 	rank integer
--- );
+-----------------------------------------------------------------------------
+-- ID: SERIAL is used to auto-increment the ID
+-- sportID: ID of the sport that the player is ranked in
+-- playerID: the player that is ranked in the sport
+-- eloRank: the rank the player is given based off the ELO ranking system
+-----------------------------------------------------------------------------
+CREATE TABLE SportRank (
+	ID integer PRIMARY KEY,
+	sportID integer REFERENCES Sport(ID),
+	playerID integer REFERENCES Player(ID),
+	eloRank integer
+);
 
 -----------------------------------------------------------------------------
 -----------------------------------------------------------------------------
@@ -76,62 +97,56 @@ CREATE TABLE Sport (
 -----------------------------------------------------------------------------
 -----------------------------------------------------------------------------
 
-CREATE TABLE Match (
-	ID SERIAL PRIMARY KEY,
-	sportID integer,
-	PlayerOneID integer,
-	PlayerTwoID integer,
-	PlayerOneScore integer,
-	PlayerTwoScore integer,
-	winner integer,
-	time timestamp,
-	verified boolean
-);
+-- CREATE TABLE Match (
+-- 	ID SERIAL PRIMARY KEY,
+-- 	sportID integer,
+-- 	PlayerOneID integer,
+-- 	PlayerTwoID integer,
+-- 	PlayerOneScore integer,
+-- 	PlayerTwoScore integer,
+-- 	winner integer,
+-- 	time timestamp,
+-- 	verified boolean
+-- );
 
-CREATE TABLE Follow (
-	ID integer PRIMARY KEY,
-	sportID integer,
-	PlayerID integer,
-	rank integer
-);
+-- CREATE TABLE SportRank (
+-- 	ID integer PRIMARY KEY,
+-- 	sportID integer,
+-- 	PlayerID integer,
+-- 	eloRank integer
+-- );
 
------------------------------------------------------------------------------
------------------------------------------------------------------------------
 
 -- Allow Players to select data from the tables
 GRANT SELECT ON Player TO PUBLIC;
 GRANT SELECT ON Sport TO PUBLIC;
 GRANT SELECT ON Match TO PUBLIC;
-GRANT SELECT ON Follow TO PUBLIC;
-
------------------------------------------------------------------------------
------------------------------------------------------------------------------
------------------------------------------------------------------------------
+GRANT SELECT ON SportRank TO PUBLIC;
 
 -- When inserting, can specify the ID which is SERIAL by giving DEFAULT as the parameter
 	-- or you can specify before VALUES that you're only specifying the emailAddress and accountCreationDate
 	-- when inserting
-INSERT INTO Player VALUES(DEFAULT, 'ceb45@students.calvin.edu', NOW());
-INSERT INTO Player (emailAddress, accountCreationDate) VALUES('igc2@students.calvin.edu', NOW());
-INSERT INTO Player VALUES(DEFAULT, 'jj47@students.calvin.edu', NOW());
-INSERT INTO Player VALUES(DEFAULT, 'boo3@students.calvin.edu', NOW());
-INSERT INTO Player VALUES(DEFAULT, 'mcw33@students.calvin.edu', NOW());
-INSERT INTO Player VALUES(DEFAULT, 'isa3@students.calvin.edu', NOW());
-INSERT INTO Player VALUES(DEFAULT, 'kvlinden@calvin.edu', NOW());
+INSERT INTO Player VALUES(DEFAULT, 'ceb45@students.calvin.edu', NOW(), 'Gwyn');
+INSERT INTO Player (emailAddress, accountCreationDate, playerName) VALUES('igc2@students.calvin.edu', NOW(), 'The 1st Ian');
+INSERT INTO Player VALUES(DEFAULT, 'jj47@students.calvin.edu', NOW(), 'sorcerer666');
+INSERT INTO Player VALUES(DEFAULT, 'boo3@students.calvin.edu', NOW(), 'Top CIT Tech');
+INSERT INTO Player VALUES(DEFAULT, 'mcw33@students.calvin.edu', NOW(), 'Melee god');
+INSERT INTO Player VALUES(DEFAULT, 'isa3@students.calvin.edu', NOW(), 'mrsillydog');
+INSERT INTO Player VALUES(DEFAULT, 'kvlinden@calvin.edu', NOW(), 'Keith');
 
 INSERT INTO Sport VALUES(DEFAULT, 'Super Smash Bros Melee', 'E-Sport');
 INSERT INTO Sport VALUES(DEFAULT, 'Street Fighter V', 'E-Sport');
 INSERT INTO Sport VALUES(DEFAULT, 'Soccer', 'Outdoor');
 INSERT INTO Sport VALUES(DEFAULT, 'Tennis', 'Outdoor');
 
-INSERT INTO Follow VALUES(1, 1, 5, 1);
-INSERT INTO Follow VALUES(2, 1, 1, 2);
-INSERT INTO Follow VALUES(3, 1, 2, 3);
-INSERT INTO Follow VALUES(4, 1, 7, 4);
+INSERT INTO SportRank VALUES(1, 1, 5, 1);
+INSERT INTO SportRank VALUES(2, 1, 1, 2);
+INSERT INTO SportRank VALUES(3, 1, 2, 3);
+INSERT INTO SportRank VALUES(4, 1, 7, 4);
 
-INSERT INTO Follow VALUES(5, 3, 6, 1);
-INSERT INTO Follow VALUES(6, 3, 4, 2);
-INSERT INTO Follow VALUES(7, 3, 3, 3);
+INSERT INTO SportRank VALUES(5, 3, 6, 1);
+INSERT INTO SportRank VALUES(6, 3, 4, 2);
+INSERT INTO SportRank VALUES(7, 3, 3, 3);
 
 -- Added to test the Match relation
 INSERT INTO Match VALUES(1, 1, 1, 2, 1, 2, 1, NOW(), true);
@@ -153,12 +168,12 @@ INSERT INTO Match VALUES(4, 4, 1, 7, 1, 7, 7, NOW(), true);
 -- ALTER TABLE Player DISABLE TRIGGER ALL;
 -- ALTER TABLE Sport DISABLE TRIGGER ALL;
 -- ALTER TABLE Match DISABLE TRIGGER ALL;
--- ALTER TABLE Follow DISABLE TRIGGER ALL;
+-- ALTER TABLE SportRank DISABLE TRIGGER ALL;
 
 -- ALTER TABLE Player ENABLE TRIGGER ALL;
 -- ALTER TABLE Sport ENABLE TRIGGER ALL;
 -- ALTER TABLE Match ENABLE TRIGGER ALL;
--- ALTER TABLE Follow ENABLE TRIGGER ALL;
+-- ALTER TABLE SportRank ENABLE TRIGGER ALL;
 
 -----------------------------------------------------------------------------
 -----------------------------------------------------------------------------
