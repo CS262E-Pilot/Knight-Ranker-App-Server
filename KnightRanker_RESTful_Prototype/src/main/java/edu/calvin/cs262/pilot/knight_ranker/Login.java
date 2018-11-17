@@ -54,6 +54,7 @@ public class Login {
      * POST
      * This method will login a player. If a player's email is not already
      * registered with the database, a new player is created.
+     *
      * @param idTokenString the token that the client has received from Google
      * @return new player entity with a system-generated ID
      * @throws SQLException
@@ -80,23 +81,37 @@ public class Login {
                     player.setEmailAddress(payload.getEmail());
                     Connection connection = null;
                     Statement statement = null;
+                    ResultSet resultPlayer = null;
                     ResultSet resultSet = null;
                     try {
                         connection = DriverManager.getConnection(System.getProperty("cloudsql"));
                         statement = connection.createStatement();
-                        resultSet = statement.executeQuery("SELECT MAX(ID) FROM Player");
-                        if (resultSet.next()) {
-                            player.setId(resultSet.getInt(1) + 1);
+                        // Check if the player already has been registered
+                        resultPlayer = findExistingPlayer(player.getEmailAddress(), statement);
+                        if (resultPlayer.next()) {
+                            return new Player(
+                                    Integer.parseInt(resultPlayer.getString(1)),
+                                    resultPlayer.getString(2),
+                                    resultPlayer.getString(3)
+                            );
                         } else {
-                            throw new RuntimeException("failed to find unique ID...");
+                            resultSet = statement.executeQuery("SELECT MAX(ID) FROM Player");
+                            if (resultSet.next()) {
+                                player.setId(resultSet.getInt(1) + 1);
+                            } else {
+                                throw new RuntimeException("failed to find unique ID...");
+                            }
+                            insertPlayer(player, statement);
+                            return player;
                         }
-                        insertPlayer(player, statement);
-                        return player;
                     } catch (SQLException e) {
                         throw (e);
                     } finally {
                         if (resultSet != null) {
                             resultSet.close();
+                        }
+                        if (resultPlayer != null) {
+                            resultPlayer.close();
                         }
                         if (statement != null) {
                             statement.close();
@@ -115,6 +130,10 @@ public class Login {
 
         }
         return null;
+    }
+
+    private ResultSet findExistingPlayer(String emailAddress, Statement statement) throws SQLException {
+        return statement.executeQuery(String.format("SELECT * FROM Player WHERE emailAddress = %s", emailAddress));
     }
 
     private void insertPlayer(Player player, Statement statement) throws SQLException {
