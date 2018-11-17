@@ -27,8 +27,13 @@
             <param-name>services</param-name>
             <!-- Need to include all .java files here if you want them to be uploaded -->
             <!-- ========================================================================================== -->
-            <param-value>edu.calvin.cs262.pilot.knight_ranker.Hello,edu.calvin.cs262.pilot.knight_ranker.PlayerResource,edu.calvin.cs262.pilot.knight_ranker.SportResource,
-                edu.calvin.cs262.pilot.knight_ranker.MatchResource,edu.calvin.cs262.pilot.knight_ranker.FollowResource</param-value>
+            <param-value>
+                edu.calvin.cs262.pilot.knight_ranker.Hello,
+                edu.calvin.cs262.pilot.knight_ranker.PlayerResource,
+                edu.calvin.cs262.pilot.knight_ranker.SportResource,
+                edu.calvin.cs262.pilot.knight_ranker.MatchResource,
+                edu.calvin.cs262.pilot.knight_ranker.Login,
+                edu.calvin.cs262.pilot.knight_ranker.FollowResource</param-value>
         </init-param>
     </servlet>
     <!-- Route API method requests to the backend. -->
