@@ -42,11 +42,13 @@ import static com.google.api.server.spi.config.ApiMethod.HttpMethod.POST;
  * This class handles the login for clients.
  */
 public class Login {
+    private static final String CLIENT_ID = "192654854744-u69k627oqgsl18jfho5a8o3435umuevk.apps.googleusercontent.com";
+
     private static final JacksonFactory jsonFactory = new JacksonFactory();
 
     private GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(UrlFetchTransport.getDefaultInstance(), jsonFactory)
             // Specify the CLIENT_ID of the app that accesses the backend:
-            .setAudience(Collections.singletonList("192654854744-6khc09kjs2ctrb8sqeoips5gpgmg5fgo.apps.googleusercontent.com"))
+            .setAudience(Collections.singletonList(CLIENT_ID))
             .build();
 
 
