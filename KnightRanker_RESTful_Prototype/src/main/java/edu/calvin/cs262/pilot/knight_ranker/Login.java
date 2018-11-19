@@ -1,12 +1,13 @@
 package edu.calvin.cs262.pilot.knight_ranker;
 
+import com.google.api.client.googleapis.auth.oauth2.*;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.server.spi.config.*;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.extensions.appengine.http.UrlFetchTransport;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.sql.Connection;
@@ -50,7 +51,6 @@ public class Login {
             // Specify the CLIENT_ID of the app that accesses the backend:
             .setAudience(Collections.singletonList(CLIENT_ID))
             .build();
-
 
     /**
      * POST
@@ -126,7 +126,7 @@ public class Login {
                     System.out.println("Invalid ID token.");
                 }
 
-            } catch (GeneralSecurityException | IOException e) {
+            } catch (IOException | GeneralSecurityException e) {
                 System.out.println(e.getLocalizedMessage());
             }
 
@@ -135,7 +135,7 @@ public class Login {
     }
 
     private ResultSet findExistingPlayer(String emailAddress, Statement statement) throws SQLException {
-        return statement.executeQuery(String.format("SELECT * FROM Player WHERE emailAddress = %s", emailAddress));
+        return statement.executeQuery(String.format("SELECT * FROM Player WHERE emailAddress = '%s'", emailAddress));
     }
 
     private void insertPlayer(Player player, Statement statement) throws SQLException {

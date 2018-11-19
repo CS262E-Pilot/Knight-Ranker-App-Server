@@ -1,6 +1,9 @@
 openapi.json
 swagger.json
 
+# Client secret JSON
+client_secret*.json
+
 # Packages
 dist
 build
