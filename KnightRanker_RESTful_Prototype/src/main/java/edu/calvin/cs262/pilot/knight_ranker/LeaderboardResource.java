@@ -58,12 +58,12 @@ public class LeaderboardResource {
      */
     private ResultSet selectPlayerRanks(Statement statement, String sport) throws SQLException {
         return statement.executeQuery(
-                String.format("SELECT eloRank, emailAddress" +
-                                "FROM Player, Sport, SportRank" +
+                String.format("SELECT rank, emailAddress" +
+                                "FROM Player, Sport, Follow" +
                                 "WHERE Sport.name = '%s'" +
-                                "AND SportRank.sportID = Sport.id" +
-                                "AND SportRank.playerID = Player.id" +
-                                "ORDER BY eloRank ASC",
+                                "AND Follow.sportID = Sport.id" +
+                                "AND Follow.playerID = Player.id" +
+                                "ORDER BY rank ASC",
                     sport
                 )
         );
