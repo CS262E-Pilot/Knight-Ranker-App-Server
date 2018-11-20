@@ -1,13 +1,40 @@
 package edu.calvin.cs262.pilot.knight_ranker;
 
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.config.*;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.api.server.spi.config.ApiMethod.HttpMethod.GET;
+
+/**
+ * This Java annotation specifies the general configuration of the Google Cloud endpoint API.
+ * The name and version are used in the URL: https://PROJECT_ID.appspot.com/knightranker/v1/ENDPOINT.
+ * The namespace specifies the Java package in which to find the API implementation.
+ * The issuers specifies boilerplate security features that we won't address in this course.
+ * <p>
+ * You should configure the name and namespace appropriately.
+ */
+@Api(
+        name = "knightranker",
+        version = "v1",
+        namespace =
+        @ApiNamespace(
+                ownerDomain = "knight_ranker.pilot.cs262.calvin.edu",
+                ownerName = "knight_ranker.pilot.cs262.calvin.edu",
+                packagePath = ""
+        ),
+        issuers = {
+                @ApiIssuer(
+                        name = "firebase",
+                        issuer = "https://securetoken.google.com/calvin-cs262-fall2018-pilot",
+                        jwksUri =
+                                "https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system"
+                                        + ".gserviceaccount.com"
+                )
+        }
+)
 
 public class LeaderboardResource {
     /**
