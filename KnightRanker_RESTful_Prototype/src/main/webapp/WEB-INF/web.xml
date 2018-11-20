@@ -33,7 +33,9 @@
                 edu.calvin.cs262.pilot.knight_ranker.SportResource,
                 edu.calvin.cs262.pilot.knight_ranker.MatchResource,
                 edu.calvin.cs262.pilot.knight_ranker.Login,
-                edu.calvin.cs262.pilot.knight_ranker.FollowResource</param-value>
+                edu.calvin.cs262.pilot.knight_ranker.FollowResource,
+                edu.calvin.cs262.pilot.knight_ranker.LeaderboardResource
+            </param-value>
         </init-param>
     </servlet>
     <!-- Route API method requests to the backend. -->
