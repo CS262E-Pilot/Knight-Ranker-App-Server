@@ -8,17 +8,18 @@ package edu.calvin.cs262.pilot.knight_ranker;
 public class Player {
 
     private int id;
-    private String emailAddress, accountCreationDate;
+    private String emailAddress, name, accountCreationDate;
 
 
     public Player() {
         // The JSON marshaller used by Endpoints requires this default constructor.
     }
 
-    public Player(int id, String emailAddress, String accountCreationDate) {
+    public Player(int id, String emailAddress, String accountCreationDate, String name) {
         this.id = id;
         this.emailAddress = emailAddress;
         this.accountCreationDate = accountCreationDate;
+        this.name = name;
     }
 
     public int getId() {
@@ -27,6 +28,14 @@ public class Player {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmailAddress() {

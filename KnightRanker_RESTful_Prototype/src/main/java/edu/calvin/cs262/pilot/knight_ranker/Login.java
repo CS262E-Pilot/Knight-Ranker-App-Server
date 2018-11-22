@@ -62,7 +62,7 @@ public class Login {
      * @throws SQLException
      */
     @ApiMethod(path = "login", httpMethod = POST)
-    public Player login(@Named("idToken") String idTokenString) throws SQLException {
+    public String login(@Named("idToken") String idTokenString) throws SQLException {
         if (idTokenString != null) {
             try {
                 GoogleIdToken idToken = verifier.verify(idTokenString);
@@ -81,39 +81,30 @@ public class Login {
 
                     // Set the email of our player
                     player.setEmailAddress(payload.getEmail());
+                    player.setName((String) payload.get("name"));
                     Connection connection = null;
                     Statement statement = null;
-                    ResultSet resultPlayer = null;
                     ResultSet resultSet = null;
                     try {
                         connection = DriverManager.getConnection(System.getProperty("cloudsql"));
                         statement = connection.createStatement();
                         // Check if the player already has been registered
-                        resultPlayer = findExistingPlayer(player.getEmailAddress(), statement);
-                        if (resultPlayer.next()) {
-                            return new Player(
-                                    Integer.parseInt(resultPlayer.getString(1)),
-                                    resultPlayer.getString(2),
-                                    resultPlayer.getString(3)
-                            );
-                        } else {
-                            resultSet = statement.executeQuery("SELECT MAX(ID) FROM Player");
-                            if (resultSet.next()) {
-                                player.setId(resultSet.getInt(1) + 1);
-                            } else {
-                                throw new RuntimeException("failed to find unique ID...");
-                            }
+                        resultSet = findExistingPlayer(player.getEmailAddress(), statement);
+                        if (!resultSet.next()) {
                             insertPlayer(player, statement);
-                            return player;
+                            // Rerun the find player so that we get the results of our insert
+                            resultSet = findExistingPlayer(player.getEmailAddress(), statement);
                         }
+                        // Create and return the token
+                        player.setId(Integer.parseInt(resultSet.getString(1)));
+                        String token = SecureTokenGenerator.nextToken();
+                        insertToken(token, player, statement);
+                        return token;
                     } catch (SQLException e) {
                         throw (e);
                     } finally {
                         if (resultSet != null) {
                             resultSet.close();
-                        }
-                        if (resultPlayer != null) {
-                            resultPlayer.close();
                         }
                         if (statement != null) {
                             statement.close();
@@ -140,9 +131,18 @@ public class Login {
 
     private void insertPlayer(Player player, Statement statement) throws SQLException {
         statement.executeUpdate(
-                String.format("INSERT INTO Player VALUES (%d, '%s')",
-                        player.getId(),
-                        player.getEmailAddress()
+                String.format("INSERT INTO Player VALUES (DEFAULT, '%s', NOW(), '%s')",
+                        player.getEmailAddress(),
+                        player.getName()
+                )
+        );
+    }
+
+    private void insertToken(String token, Player player, Statement statement) throws SQLException {
+        statement.executeUpdate(
+                String.format("INSERT INTO PlayerToken VALUES ('%s', '%d')",
+                        token,
+                        player.getId()
                 )
         );
     }

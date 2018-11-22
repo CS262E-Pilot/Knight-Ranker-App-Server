@@ -107,11 +107,6 @@ import static com.google.api.server.spi.config.ApiMethod.HttpMethod.DELETE;
  *    https://calvin-cs262-fall2018-pilot.appspot.com/knightranker/v1/sport/5
  */
 public class PlayerResource {
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * GET
      * This method gets the full list of players from the Player table.
@@ -130,12 +125,14 @@ public class PlayerResource {
             statement = connection.createStatement();
             resultSet = selectPlayers(statement);
             while (resultSet.next()) {
-                Player p = new Player(
+                result.add(
+                    new Player(
                         Integer.parseInt(resultSet.getString(1)),
                         resultSet.getString(2),
-                        resultSet.getString(3)
+                        resultSet.getString(3),
+                        resultSet.getString(4)
+                    )
                 );
-                result.add(p);
             }
         } catch (SQLException e) {
             throw (e);
@@ -179,7 +176,8 @@ public class PlayerResource {
                 result = new Player(
                         Integer.parseInt(resultSet.getString(1)),
                         resultSet.getString(2),
-                        resultSet.getString(3)
+                        resultSet.getString(3),
+                        resultSet.getString(4)
                 );
             }
         } catch (SQLException e) {
