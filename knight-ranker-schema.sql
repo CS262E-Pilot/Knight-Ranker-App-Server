@@ -24,19 +24,29 @@ DROP TABLE IF EXISTS Player CASCADE;
 DROP TABLE IF EXISTS Sport CASCADE;
 DROP TABLE IF EXISTS Match CASCADE;
 DROP TABLE IF EXISTS SportRank CASCADE;
-
+DROP TABLE IF EXISTS Follow CASCADE;
+DROP TABLE IF EXISTS PlayerToken CASCADE;
 
 -----------------------------------------------------------------------------
 -- ID: SERIAL is used to auto-increment the ID
 -- emailAddress: email of the player
 -- accountCreationDate: when the player's account was made
--- playerName: the name or gamer tag the person wants to be known by
+-- namee: the name or gamer tag the person wants to be known by
 -----------------------------------------------------------------------------
 CREATE TABLE Player (
-	ID SERIAL PRIMARY KEY,
+	ID SERIAL UNIQUE PRIMARY KEY,
 	emailAddress varchar(254) NOT NULL,
 	accountCreationDate timestamp,
-	playerName varchar(64)
+	name varchar(64)
+);
+
+-----------------------------------------------------------------------------
+-- token: the secure token given to a user for persistent session
+-- playerID: the id of the player associated with the token
+-----------------------------------------------------------------------------
+CREATE TABLE PlayerToken (
+       token varchar(256) UNIQUE,
+       playerID integer REFERENCES Player(ID)
 );
 
 -----------------------------------------------------------------------------
@@ -45,7 +55,7 @@ CREATE TABLE Player (
 -- type: the type of the sport (i.e. indoor, outdoor, eSport)
 -----------------------------------------------------------------------------
 CREATE TABLE Sport (
-	ID SERIAL PRIMARY KEY,
+	ID SERIAL UNIQUE PRIMARY KEY,
 	name varchar(50),
 	type varchar(50)
 );
@@ -53,21 +63,21 @@ CREATE TABLE Sport (
 -----------------------------------------------------------------------------
 -- ID: SERIAL is used to auto-increment the ID
 -- sportID: the ID of the sport that was played
--- playerOneID: ID of the first player
--- playerTwoID: ID of the second player
--- playerOneScore: score of the first player
--- playerTwoScore: score of the second player
+-- playerID: ID of the player who issued the challenge
+-- opponentID: ID of the player who needs to confirm the challenge
+-- playerScore: score of the player
+-- opponentScore: score of the opponent
 -- winner: the player who won, stored because some games have weird ways of scoring
 -- time: when the game was played
 -- verified: if the match has been verified by both player
 -----------------------------------------------------------------------------
 CREATE TABLE Match (
-	ID SERIAL PRIMARY KEY,
+	ID SERIAL UNIQUE PRIMARY KEY,
 	sportID integer REFERENCES Sport(ID),
-	playerOneID integer REFERENCES Player(ID),
-	playerTwoID integer REFERENCES Player(ID),
-	playerOneScore integer REFERENCES Player(ID),
-	playerTwoScore integer REFERENCES Player(ID),
+	playerID integer REFERENCES Player(ID),
+	opponentID integer REFERENCES Player(ID),
+	playerScore integer REFERENCES Player(ID),
+	opponentScore integer REFERENCES Player(ID),
 	winner integer REFERENCES Player(ID),
 	time timestamp,
 	verified boolean
@@ -80,7 +90,7 @@ CREATE TABLE Match (
 -- eloRank: the rank the player is given based off the ELO ranking system
 -----------------------------------------------------------------------------
 CREATE TABLE SportRank (
-	ID integer PRIMARY KEY,
+	ID SERIAL UNIQUE PRIMARY KEY,
 	sportID integer REFERENCES Sport(ID),
 	playerID integer REFERENCES Player(ID),
 	eloRank integer
@@ -122,37 +132,38 @@ GRANT SELECT ON Player TO PUBLIC;
 GRANT SELECT ON Sport TO PUBLIC;
 GRANT SELECT ON Match TO PUBLIC;
 GRANT SELECT ON SportRank TO PUBLIC;
+GRANT SELECT ON PlayerToken TO PUBLIC;
 
 -- When inserting, can specify the ID which is SERIAL by giving DEFAULT as the parameter
 	-- or you can specify before VALUES that you're only specifying the emailAddress and accountCreationDate
 	-- when inserting
 INSERT INTO Player VALUES(DEFAULT, 'ceb45@students.calvin.edu', NOW(), 'Gwyn');
-INSERT INTO Player (emailAddress, accountCreationDate, playerName) VALUES('igc2@students.calvin.edu', NOW(), 'The 1st Ian');
+INSERT INTO Player VALUES(DEFAULT, 'igc2@students.calvin.edu', NOW(), 'The 1st Ian');
 INSERT INTO Player VALUES(DEFAULT, 'jj47@students.calvin.edu', NOW(), 'sorcerer666');
 INSERT INTO Player VALUES(DEFAULT, 'boo3@students.calvin.edu', NOW(), 'Top CIT Tech');
-INSERT INTO Player VALUES(DEFAULT, 'mcw33@students.calvin.edu', NOW(), 'Melee god');
+INSERT INTO Player VALUES(DEFAULT, 'mcw33@students.calvin.edu', NOW(), 'mcwissink');
 INSERT INTO Player VALUES(DEFAULT, 'isa3@students.calvin.edu', NOW(), 'mrsillydog');
 INSERT INTO Player VALUES(DEFAULT, 'kvlinden@calvin.edu', NOW(), 'Keith');
 
 INSERT INTO Sport VALUES(DEFAULT, 'Super Smash Bros Melee', 'E-Sport');
 INSERT INTO Sport VALUES(DEFAULT, 'Street Fighter V', 'E-Sport');
-INSERT INTO Sport VALUES(DEFAULT, 'Soccer', 'Outdoor');
+INSERT INTO Sport VALUES(DEFAULT, 'Chess', 'Outdoor');
 INSERT INTO Sport VALUES(DEFAULT, 'Tennis', 'Outdoor');
 
-INSERT INTO SportRank VALUES(1, 1, 5, 1);
-INSERT INTO SportRank VALUES(2, 1, 1, 2);
-INSERT INTO SportRank VALUES(3, 1, 2, 3);
-INSERT INTO SportRank VALUES(4, 1, 7, 4);
+INSERT INTO SportRank VALUES(DEFAULT, 1, 5, 1);
+INSERT INTO SportRank VALUES(DEFAULT, 1, 1, 2);
+INSERT INTO SportRank VALUES(DEFAULT, 1, 2, 3);
+INSERT INTO SportRank VALUES(DEFAULT, 1, 7, 4);
 
-INSERT INTO SportRank VALUES(5, 3, 6, 1);
-INSERT INTO SportRank VALUES(6, 3, 4, 2);
-INSERT INTO SportRank VALUES(7, 3, 3, 3);
+INSERT INTO SportRank VALUES(DEFAULT, 3, 6, 1);
+INSERT INTO SportRank VALUES(DEFAULT, 3, 4, 2);
+INSERT INTO SportRank VALUES(DEFAULT, 3, 3, 3);
 
 -- Added to test the Match relation
-INSERT INTO Match VALUES(1, 1, 1, 2, 1, 2, 1, NOW(), true);
-INSERT INTO Match VALUES(2, 2, 3, 4, 3, 4, 3, NOW(), true);
-INSERT INTO Match VALUES(3, 3, 5, 6, 5, 6, 5, NOW(), true);
-INSERT INTO Match VALUES(4, 4, 1, 7, 1, 7, 7, NOW(), true);
+INSERT INTO Match VALUES(DEFAULT, 1, 1, 2, 1, 2, 1, NOW(), true);
+INSERT INTO Match VALUES(DEFAULT, 2, 3, 4, 3, 4, 3, NOW(), true);
+INSERT INTO Match VALUES(DEFAULT, 3, 5, 6, 5, 6, 5, NOW(), true);
+INSERT INTO Match VALUES(DEFAULT, 4, 1, 7, 1, 7, 7, NOW(), true);
 
 -----------------------------------------------------------------------------
 -----------------------------------------------------------------------------
