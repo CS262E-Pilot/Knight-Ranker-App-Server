@@ -62,7 +62,7 @@ public class Login {
      * @throws SQLException
      */
     @ApiMethod(path = "login", httpMethod = POST)
-    public String login(@Named("idToken") String idTokenString) throws SQLException {
+    public Token login(@Named("idToken") String idTokenString) throws SQLException {
         if (idTokenString != null) {
             try {
                 GoogleIdToken idToken = verifier.verify(idTokenString);
@@ -94,12 +94,15 @@ public class Login {
                             insertPlayer(player, statement);
                             // Rerun the find player so that we get the results of our insert
                             resultSet = findExistingPlayer(player.getEmailAddress(), statement);
+                            if (!resultSet.next()) {
+                                throw new SQLException("Failed to add player to database");
+                            }
                         }
                         // Create and return the token
                         player.setId(Integer.parseInt(resultSet.getString(1)));
                         String token = SecureTokenGenerator.nextToken();
                         insertToken(token, player, statement);
-                        return token;
+                        return new Token(token);
                     } catch (SQLException e) {
                         throw (e);
                     } finally {
@@ -140,7 +143,7 @@ public class Login {
 
     private void insertToken(String token, Player player, Statement statement) throws SQLException {
         statement.executeUpdate(
-                String.format("INSERT INTO PlayerToken VALUES ('%s', '%d')",
+                String.format("INSERT INTO PlayerToken VALUES ('%s', %d)",
                         token,
                         player.getId()
                 )

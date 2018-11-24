@@ -40,7 +40,7 @@ public class Hello {
      */
     @ApiMethod(httpMethod = GET)
     public Player hello() {
-        return new Player(-1, "Hello, endpoints!", null);
+        return new Player();
     }
 
 }
