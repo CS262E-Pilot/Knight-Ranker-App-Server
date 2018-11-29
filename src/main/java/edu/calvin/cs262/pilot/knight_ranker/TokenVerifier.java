@@ -9,7 +9,7 @@ public class TokenVerifier {
      * @return Player, null
      * @throws SQLException
      */
-    public static Player getPlayer(String token) throws SQLException {
+    public static Player verifyPlayer(String token) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
