@@ -2,13 +2,14 @@ package edu.calvin.cs262.pilot.knight_ranker;
 
 import java.sql.*;
 
-/**
- * This class implements a Match Data-Access Object (DAO) class for the Match relation.
- * This provides an object-oriented way to represent and manipulate player "objects" from
- * the traditional (non-object-oriented) Knight-Ranker database.
- */
 public class TokenVerifier {
-    public static Player getPlayer(String token) throws SQLException, SecurityException {
+    /**
+     * Verifies a client token and returns the corresponding player, if invalid returns null
+     * @param token
+     * @return Player, null
+     * @throws SQLException
+     */
+    public static Player getPlayer(String token) throws SQLException {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
@@ -25,7 +26,7 @@ public class TokenVerifier {
                 );
             } else {
                 // If we can't find a token, that means somebody is sending invalid tokens
-                throw new SecurityException("Invalid token");
+                return null;
             }
         } catch (SQLException e) {
             throw (e);
