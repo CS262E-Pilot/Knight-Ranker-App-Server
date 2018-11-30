@@ -7,17 +7,18 @@ public class ConfirmMatch {
 
     private int id;
     private int playerScore, opponentScore;
-    private String sport, playerName, myTime;
+    private String sport, playerName, opponentName, myTime;
 
 
     public ConfirmMatch() {
         // The JSON marshaller used by Endpoints requires this default constructor.
     }
 
-    public ConfirmMatch(int id, String sport, String playerName, int playerScore, int opponentScore, String time) {
+    public ConfirmMatch(int id, String sport, String playerName, String opponentName, int playerScore, int opponentScore, String time) {
         this.id = id;
         this.sport = sport;
         this.playerName = playerName;
+        this.opponentName = opponentName;
         this.playerScore = playerScore;
         this.opponentScore = opponentScore;
         this.myTime = time;
@@ -47,6 +48,10 @@ public class ConfirmMatch {
         return myTime;
     }
 
+    public String getOpponentName() {
+        return opponentName;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -69,5 +74,9 @@ public class ConfirmMatch {
 
     public void setMyTime(String myTime) {
         this.myTime = myTime;
+    }
+
+    public void setOpponentName(String opponentName) {
+        this.opponentName = opponentName;
     }
 }

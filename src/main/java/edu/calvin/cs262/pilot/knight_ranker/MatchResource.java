@@ -136,9 +136,10 @@ public class MatchResource {
                             Integer.parseInt(resultSet.getString(1)),
                             resultSet.getString(2),
                             resultSet.getString(3),
-                            Integer.parseInt(resultSet.getString(4)),
+                            resultSet.getString(4),
                             Integer.parseInt(resultSet.getString(5)),
-                            resultSet.getString(6)
+                            Integer.parseInt(resultSet.getString(6)),
+                            resultSet.getString(7)
                     );
                     result.add(p);
                 }
@@ -190,9 +191,10 @@ public class MatchResource {
                         Integer.parseInt(resultSet.getString(1)),
                         resultSet.getString(2),
                         resultSet.getString(3),
-                        Integer.parseInt(resultSet.getString(4)),
+                        resultSet.getString(4),
                         Integer.parseInt(resultSet.getString(5)),
-                        resultSet.getString(6)
+                        Integer.parseInt(resultSet.getString(6)),
+                        resultSet.getString(7)
                 );
             }
         } catch (SQLException e) {
@@ -322,10 +324,11 @@ public class MatchResource {
      */
     private ResultSet selectMatch(int id, Statement statement) throws SQLException {
         return statement.executeQuery(
-                String.format("SELECT Match.ID, Sport.name, Player.name, Match.playerScore, " +
+                String.format("SELECT Match.ID, Sport.name, Player.name, Opponent.name, Match.playerScore, " +
                                 "Match.opponentScore, Match.time" +
                                 "FROM Match " +
                                 "INNER JOIN Player ON Match.playerID = Player.ID " +
+                                "INNER JOIN Player AS Opponent ON Match.opponentID = Opponent.ID " +
                                 "INNER JOIN Sport ON Match.sportID = Sport.ID" +
                                 "WHERE Match.ID = %d",
                         id
@@ -346,10 +349,11 @@ public class MatchResource {
      */
     private ResultSet selectMatches(Player player, Statement statement) throws SQLException {
         return statement.executeQuery(
-                String.format("SELECT Match.ID, Sport.name, Player.name, Match.playerScore, " +
+                String.format("SELECT Match.ID, Sport.name, Player.name, Opponent.name, Match.playerScore, " +
                                 "Match.opponentScore, Match.time" +
                                 "FROM Match " +
                                 "INNER JOIN Player ON Match.playerID = Player.ID " +
+                                "INNER JOIN Player AS Opponent ON Match.opponentID = Opponent.ID " +
                                 "INNER JOIN Sport ON Match.sportID = Sport.ID" +
                                 "WHERE Match.verified = FALSE " +
                                 "AND Match.opponentID = %d " +
