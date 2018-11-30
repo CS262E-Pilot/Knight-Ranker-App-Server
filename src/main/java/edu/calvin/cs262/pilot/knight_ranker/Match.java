@@ -8,7 +8,7 @@ package edu.calvin.cs262.pilot.knight_ranker;
 public class Match {
 
     private int id;
-    private int mySportID, myPlayerOneID, myPlayerTwoID, myPlayerOneScore, myPlayerTwoScore, myWinner;
+    private int mySportID, playerID, opponentID, playerScore, opponentScore, myWinner;
     private String myTime, myVerified;
 
 
@@ -16,13 +16,13 @@ public class Match {
         // The JSON marshaller used by Endpoints requires this default constructor.
     }
 
-    public Match(int id, int sportID, int playerOneID, int playerTwoID, int playerOneScore, int playerTwoScore, int winner, String time, String verified) {
+    public Match(int id, int sportID, int playerID, int opponentID, int playerScore, int opponentScore, int winner, String time, String verified) {
         this.id = id;
         this.mySportID = sportID;
-        this.myPlayerOneID = playerOneID;
-        this.myPlayerTwoID = playerTwoID;
-        this.myPlayerOneScore = playerOneScore;
-        this.myPlayerTwoScore = playerTwoScore;
+        this.playerID = playerID;
+        this.opponentID = opponentID;
+        this.playerScore = playerScore;
+        this.opponentScore = opponentScore;
         this.myWinner = winner;
         this.myTime = time;
         this.myVerified = verified;
@@ -44,36 +44,36 @@ public class Match {
         this.mySportID = sportID;
     }
 
-    public int getPlayerOneID() {
-        return this.myPlayerOneID;
+    public int getPlayerID() {
+        return this.playerID;
     }
 
-    public void setPlayerOneID(int playerOneID) {
-        this.myPlayerOneID = playerOneID;
+    public void setPlayerID(int playerID) {
+        this.playerID = playerID;
     }
 
-    public int getPlayerTwoID() {
-        return this.myPlayerTwoID;
+    public int getOpponentID() {
+        return this.opponentID;
     }
 
-    public void setPlayerTwoID(int playerTwoID) {
-        this.myPlayerTwoID = playerTwoID;
+    public void setOpponentID(int opponentID) {
+        this.opponentID = opponentID;
     }
 
-    public int getPlayerOneScore() {
-        return this.myPlayerOneScore;
+    public int getPlayerScore() {
+        return this.playerScore;
     }
 
-    public void setPlayerOneScore(int playerOneScore) {
-        this.myPlayerOneScore = playerOneScore;
+    public void setPlayerScore(int playerScore) {
+        this.playerScore = playerScore;
     }
 
-    public int getPlayerTwoScore() {
-        return this.myPlayerTwoScore;
+    public int getOpponentScore() {
+        return this.opponentScore;
     }
 
-    public void setPlayerTwoScore(int playerTwoScore) {
-        this.myPlayerTwoScore = playerTwoScore;
+    public void setOpponentScore(int opponentScore) {
+        this.opponentScore = opponentScore;
     }
 
     public int getWinner() {
