@@ -5,43 +5,35 @@ package edu.calvin.cs262.pilot.knight_ranker;
  * Source: https://www.geeksforgeeks.org/elo-rating-algorithm/
  */
 public class Elo {
+    public static final int StartingRank = 1500;
     private static final int K = 30;
     /**
      * Function to calculate the Probability
-     * @param rating1
-     * @param rating2
-     * @return
+     * @param ratingA elo rating
+     * @param ratingB elo rating
+     * @return the probability of winning
      */
-    static float Probability(int rating1, int rating2) {
+    static float Probability(int ratingA, int ratingB) {
         return 1.0f * 1.0f / (1 + 1.0f *
                 (float)(Math.pow(10, 1.0f *
-                        (rating1 - rating2) / 400)));
+                        (ratingA - ratingB) / 400)));
     }
 
     /**
-     * Function to calculate Elo rating
-     * @param playerRank
-     * @param opponentRank
-     * @param playerScore
-     * @param opponentScore
+     *  Function to calculate Elo rating for player A
+     * @param ratingA elo rating
+     * @param ratingB elo rating
+     * @param scoreA the score of a match
+     * @param scoreB the opposing score for a match
      */
-    static void EloRating(int playerRank, int opponentRank, int playerScore, int opponentScore)
+    static int EloRating(int ratingA, int ratingB, int scoreA, int scoreB)
     {
-        // Normalize playerScore and opponentScore to 0-1 range
-        int maxScore = playerScore + opponentScore;
-        int playerNormalizedScore = playerScore/maxScore;
-        int opponentNormalizedScore = opponentScore/maxScore;
-        // To calculate the Winning
-        // Probability of Player B
-        float Pb = Probability(playerRank, opponentRank);
-
+        // Normalize the score to 0-1 range
+        int normalizedScore = scoreA/(scoreA + scoreB);
         // To calculate the Winning
         // Probability of Player A
-        float Pa = Probability(opponentRank, playerRank);
+        float Pa = Probability(ratingB, ratingA);
 
-        int playerNewRank = Math.round(playerRank + K * (playerNormalizedScore - Pa));
-        int opponentNewRank = Math.round(opponentRank + K * (opponentNormalizedScore - Pb));
-
-
+        return Math.round(ratingA + K * (normalizedScore - Pa));
     }
 }
