@@ -89,20 +89,16 @@ public class Login {
                         connection = DriverManager.getConnection(System.getProperty("cloudsql"));
                         statement = connection.createStatement();
                         // Check if the player already has been registered
-                        resultSet = findExistingPlayer(player.getEmailAddress(), statement);
-                        if (!resultSet.next()) {
-                            insertPlayer(player, statement);
-                            // Rerun the find player so that we get the results of our insert
-                            resultSet = findExistingPlayer(player.getEmailAddress(), statement);
-                            if (!resultSet.next()) {
-                                throw new SQLException("Failed to add player to database");
-                            }
+                        resultSet = findOrCreatePlayer(player, statement);
+                        if (resultSet.next()) {
+                            // Create and return the token
+                            player.setId(Integer.parseInt(resultSet.getString(1)));
+                            String token = SecureTokenGenerator.nextToken();
+                            insertToken(token, player, statement);
+                            return new Token(token);
+                        } else {
+                            throw new SQLException("Failed to add player to database");
                         }
-                        // Create and return the token
-                        player.setId(Integer.parseInt(resultSet.getString(1)));
-                        String token = SecureTokenGenerator.nextToken();
-                        insertToken(token, player, statement);
-                        return new Token(token);
                     } catch (SQLException e) {
                         throw (e);
                     } finally {
@@ -128,17 +124,14 @@ public class Login {
         return null;
     }
 
-    private ResultSet findExistingPlayer(String emailAddress, Statement statement) throws SQLException {
-        return statement.executeQuery(String.format("SELECT * FROM Player WHERE emailAddress = '%s'", emailAddress));
-    }
-
-    private void insertPlayer(Player player, Statement statement) throws SQLException {
+    private ResultSet findOrCreatePlayer(Player player, Statement statement) throws SQLException {
         statement.executeUpdate(
-                String.format("INSERT INTO Player VALUES (DEFAULT, '%s', NOW(), '%s')",
+                String.format("INSERT INTO Player VALUES (DEFAULT, '%s', NOW(), '%s') ON CONFLICT DO NOTHING",
                         player.getEmailAddress(),
                         player.getName()
                 )
         );
+        return statement.executeQuery(String.format("SELECT * FROM Player WHERE emailAddress = '%s'", player.getEmailAddress()));
     }
 
     private void insertToken(String token, Player player, Statement statement) throws SQLException {

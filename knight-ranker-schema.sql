@@ -35,7 +35,7 @@ DROP TABLE IF EXISTS PlayerToken CASCADE;
 -----------------------------------------------------------------------------
 CREATE TABLE Player (
 	ID SERIAL UNIQUE PRIMARY KEY,
-	emailAddress varchar(254) NOT NULL,
+	emailAddress varchar(254) UNIQUE NOT NULL,
 	accountCreationDate timestamp,
 	name varchar(64)
 );
@@ -88,12 +88,14 @@ CREATE TABLE Match (
 -- sportID: ID of the sport that the player is ranked in
 -- playerID: the player that is ranked in the sport
 -- eloRank: the rank the player is given based off the ELO ranking system
+-- We enforce that the combination of sportID and playerID is unique, makes inserting into table easier
 -----------------------------------------------------------------------------
 CREATE TABLE SportRank (
 	ID SERIAL UNIQUE PRIMARY KEY,
 	sportID integer REFERENCES Sport(ID),
 	playerID integer REFERENCES Player(ID),
-	eloRank integer
+	eloRank integer,
+	UNIQUE(sportID, playerID)
 );
 
 -----------------------------------------------------------------------------
@@ -137,33 +139,33 @@ GRANT SELECT ON PlayerToken TO PUBLIC;
 -- When inserting, can specify the ID which is SERIAL by giving DEFAULT as the parameter
 	-- or you can specify before VALUES that you're only specifying the emailAddress and accountCreationDate
 	-- when inserting
-INSERT INTO Player VALUES(DEFAULT, 'ceb45@students.calvin.edu', NOW(), 'Gwyn');
-INSERT INTO Player VALUES(DEFAULT, 'igc2@students.calvin.edu', NOW(), 'The 1st Ian');
-INSERT INTO Player VALUES(DEFAULT, 'jj47@students.calvin.edu', NOW(), 'sorcerer666');
-INSERT INTO Player VALUES(DEFAULT, 'boo3@students.calvin.edu', NOW(), 'Top CIT Tech');
-INSERT INTO Player VALUES(DEFAULT, 'mcw33@students.calvin.edu', NOW(), 'mcwissink');
-INSERT INTO Player VALUES(DEFAULT, 'isa3@students.calvin.edu', NOW(), 'mrsillydog');
-INSERT INTO Player VALUES(DEFAULT, 'kvlinden@calvin.edu', NOW(), 'Keith');
+--INSERT INTO Player VALUES(DEFAULT, 'ceb45@students.calvin.edu', NOW(), 'Gwyn');
+--INSERT INTO Player VALUES(DEFAULT, 'igc2@students.calvin.edu', NOW(), 'The 1st Ian');
+--INSERT INTO Player VALUES(DEFAULT, 'jj47@students.calvin.edu', NOW(), 'sorcerer666');
+--INSERT INTO Player VALUES(DEFAULT, 'boo3@students.calvin.edu', NOW(), 'Top CIT Tech');
+--INSERT INTO Player VALUES(DEFAULT, 'mcw33@students.calvin.edu', NOW(), 'mcwissink');
+--INSERT INTO Player VALUES(DEFAULT, 'isa3@students.calvin.edu', NOW(), 'mrsillydog');
+--INSERT INTO Player VALUES(DEFAULT, 'kvlinden@calvin.edu', NOW(), 'Keith');
 
 INSERT INTO Sport VALUES(DEFAULT, 'Super Smash Bros Melee', 'E-Sport');
 INSERT INTO Sport VALUES(DEFAULT, 'Street Fighter V', 'E-Sport');
 INSERT INTO Sport VALUES(DEFAULT, 'Chess', 'Outdoor');
 INSERT INTO Sport VALUES(DEFAULT, 'Tennis', 'Outdoor');
 
-INSERT INTO SportRank VALUES(DEFAULT, 1, 5, 1);
-INSERT INTO SportRank VALUES(DEFAULT, 1, 1, 2);
-INSERT INTO SportRank VALUES(DEFAULT, 1, 2, 3);
-INSERT INTO SportRank VALUES(DEFAULT, 1, 7, 4);
-
-INSERT INTO SportRank VALUES(DEFAULT, 3, 6, 1);
-INSERT INTO SportRank VALUES(DEFAULT, 3, 4, 2);
-INSERT INTO SportRank VALUES(DEFAULT, 3, 3, 3);
+--INSERT INTO SportRank VALUES(DEFAULT, 1, 5, 1);
+--INSERT INTO SportRank VALUES(DEFAULT, 1, 1, 2);
+--INSERT INTO SportRank VALUES(DEFAULT, 1, 2, 3);
+--INSERT INTO SportRank VALUES(DEFAULT, 1, 7, 4);
+--
+--INSERT INTO SportRank VALUES(DEFAULT, 3, 6, 1);
+--INSERT INTO SportRank VALUES(DEFAULT, 3, 4, 2);
+--INSERT INTO SportRank VALUES(DEFAULT, 3, 3, 3);
 
 -- Added to test the Match relation
-INSERT INTO Match VALUES(DEFAULT, 1, 1, 2, 1, 2, 1, NOW(), true);
-INSERT INTO Match VALUES(DEFAULT, 2, 3, 4, 3, 4, 3, NOW(), true);
-INSERT INTO Match VALUES(DEFAULT, 3, 5, 6, 5, 6, 5, NOW(), true);
-INSERT INTO Match VALUES(DEFAULT, 4, 1, 7, 1, 7, 7, NOW(), true);
+--INSERT INTO Match VALUES(DEFAULT, 1, 1, 2, 1, 2, 1, NOW(), true);
+--INSERT INTO Match VALUES(DEFAULT, 2, 3, 4, 3, 4, 3, NOW(), true);
+--INSERT INTO Match VALUES(DEFAULT, 3, 5, 6, 5, 6, 5, NOW(), true);
+--INSERT INTO Match VALUES(DEFAULT, 4, 1, 7, 1, 7, 7, NOW(), true);
 
 -----------------------------------------------------------------------------
 -----------------------------------------------------------------------------
