@@ -421,7 +421,7 @@ public class MatchResource {
 
     private ResultSet selectSport(String name, Statement statement) throws SQLException {
         return statement.executeQuery(
-                String.format("SELECT * FROM Sport WHERE WHERE Sport.name = '%s'", name)
+                String.format("SELECT * FROM Sport WHERE Sport.name = '%s'", name)
         );
     }
 
