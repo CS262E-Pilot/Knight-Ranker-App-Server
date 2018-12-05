@@ -235,7 +235,42 @@ public class MatchResource {
             try {
                 connection = DriverManager.getConnection(System.getProperty("cloudsql"));
                 statement = connection.createStatement();
+                // Confirm that the match happened
                 resultSet = confirmMatch(player, matchID, statement);
+                if (resultSet.next()) {
+                    // Build the match object
+                    Match match = new Match(
+                            Integer.parseInt(resultSet.getString(1)),
+                            Integer.parseInt(resultSet.getString(2)),
+                            Integer.parseInt(resultSet.getString(3)),
+                            Integer.parseInt(resultSet.getString(4)),
+                            Integer.parseInt(resultSet.getString(5)),
+                            Integer.parseInt(resultSet.getString(6)),
+                            Integer.parseInt(resultSet.getString(7)),
+                            resultSet.getString(8),
+                            resultSet.getString(9)
+                    );
+                    // Make sure a sport rank exists for the player
+                    resultSet = findOrCreateSportRank(match.getSportID(), match.getPlayerID(), statement);
+                    if (resultSet.next()) {
+                        int playerEloRank = Integer.parseInt(resultSet.getString(1));
+                        // Make sure a sport rank exists for the opponent
+                        resultSet = findOrCreateSportRank(match.getSportID(), match.getOpponentID(), statement);
+                        if (resultSet.next()) {
+                            int opponentEloRank = Integer.parseInt(resultSet.getString(1));
+                            // Update the elo rating of the player
+                            updateSportRank(match.getSportID(), match.getPlayerID(),
+                                    Elo.EloRating(playerEloRank, opponentEloRank, match.getPlayerScore(), match.getOpponentScore()),
+                                    statement
+                            );
+                            // Update hte elo rating of the opponent
+                            updateSportRank(match.getSportID(), match.getOpponentID(),
+                                    Elo.EloRating(opponentEloRank, playerEloRank, match.getOpponentScore(), match.getPlayerScore()),
+                                    statement
+                            );
+                        }
+                    }
+                }
             } catch (SQLException e) {
                 throw (e);
             } finally {
@@ -336,9 +371,6 @@ public class MatchResource {
         );
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * Gets all the unconfirmed matches for a user. Since the user is confirming the match,
      * that means the user is actually the opponent.
@@ -363,9 +395,6 @@ public class MatchResource {
         );
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * Updates the ConfirmMatch to be verified
      * @param player
@@ -385,9 +414,6 @@ public class MatchResource {
         return selectMatch(matchID, statement);
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////
-
     /*
      * This function inserts the given match using the given JDBC statement.
      */
@@ -404,19 +430,15 @@ public class MatchResource {
         );
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////
+    private ResultSet findOrCreateSportRank(int sportId, int playerId, Statement statement) throws SQLException {
+        statement.executeUpdate(
+                String.format("INSERT INTO SportRank VALUES (DEFAULT, %d, %d, %d) ON CONFLICT DO NOTHING", sportId, playerId, Elo.StartingRank)
+        );
+        return statement.executeQuery(String.format("SELECT eloRank FROM SportRank WHERE sportID=%d AND playerID=%d", sportId, playerId));
+    }
 
-    /*
-     * This function returns a value literal suitable for an SQL INSERT/UPDATE command.
-     * If the value is NULL, it returns an unquoted NULL, otherwise it returns the quoted value.
-     */
-    private String getValueStringOrNull(String value) {
-        if (value == null) {
-            return "NULL";
-        } else {
-            return "'" + value + "'";
-        }
+    private void updateSportRank(int sportId, int playerId, int elo, Statement statement) throws SQLException {
+        statement.executeUpdate(String.format("UPDATE SportRank SET eloRank=%d WHERE sportID=%d playerID=%d", elo, sportId, playerId));
     }
 
     private ResultSet selectSport(String name, Statement statement) throws SQLException {
@@ -425,6 +447,4 @@ public class MatchResource {
         );
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////
 }
