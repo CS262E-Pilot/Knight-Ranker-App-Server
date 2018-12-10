@@ -382,11 +382,11 @@ public class MatchResource {
     private ResultSet selectMatches(Player player, Statement statement) throws SQLException {
         return statement.executeQuery(
                 String.format("SELECT Match.ID, Sport.name, Player.name, Opponent.name, Match.playerScore, " +
-                                "Match.opponentScore, Match.time" +
+                                "Match.opponentScore, Match.time " +
                                 "FROM Match " +
                                 "INNER JOIN Player ON Match.playerID = Player.ID " +
                                 "INNER JOIN Player AS Opponent ON Match.opponentID = Opponent.ID " +
-                                "INNER JOIN Sport ON Match.sportID = Sport.ID" +
+                                "INNER JOIN Sport ON Match.sportID = Sport.ID " +
                                 "WHERE Match.verified = FALSE " +
                                 "AND Match.opponentID = %d " +
                                 "ORDER BY Match.time",

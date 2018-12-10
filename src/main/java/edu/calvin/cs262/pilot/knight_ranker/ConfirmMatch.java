@@ -7,7 +7,7 @@ public class ConfirmMatch {
 
     private int id;
     private int playerScore, opponentScore;
-    private String sport, playerName, opponentName, myTime;
+    private String sport, playerName, opponentName, time;
 
 
     public ConfirmMatch() {
@@ -21,7 +21,7 @@ public class ConfirmMatch {
         this.opponentName = opponentName;
         this.playerScore = playerScore;
         this.opponentScore = opponentScore;
-        this.myTime = time;
+        this.time = time;
     }
 
     public int getId() {
@@ -44,8 +44,8 @@ public class ConfirmMatch {
         return playerName;
     }
 
-    public String getMyTime() {
-        return myTime;
+    public String getTime() {
+        return time;
     }
 
     public String getOpponentName() {
@@ -72,8 +72,8 @@ public class ConfirmMatch {
         this.playerName = playerName;
     }
 
-    public void setMyTime(String myTime) {
-        this.myTime = myTime;
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public void setOpponentName(String opponentName) {
