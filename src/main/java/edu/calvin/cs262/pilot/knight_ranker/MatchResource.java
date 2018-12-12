@@ -164,6 +164,58 @@ public class MatchResource {
 
     }
 
+    /**
+     * GET
+     * This method gets the full list of matches from the ConfirmMatch table.
+     *
+     * @return JSON-formatted list of match records (based on a root JSON tag of "items")
+     * @throws SQLException
+     */
+    @ApiMethod(path = "matches/confirm", httpMethod = GET)
+    public List<ConfirmMatch> getConfirmMatches(@Named("token") String token) throws SQLException {
+        Player player = TokenVerifier.verifyPlayer(token);
+        if (player != null) {
+            Connection connection = null;
+            Statement statement = null;
+            ResultSet resultSet = null;
+            List<ConfirmMatch> result = new ArrayList<ConfirmMatch>();
+            try {
+                connection = DriverManager.getConnection(System.getProperty("cloudsql"));
+                statement = connection.createStatement();
+                resultSet = selectConfirmedMatches(player, statement);
+                while (resultSet.next()) {
+                    ConfirmMatch p = new ConfirmMatch(
+                            Integer.parseInt(resultSet.getString(1)),
+                            resultSet.getString(2),
+                            resultSet.getString(3),
+                            resultSet.getString(4),
+                            Integer.parseInt(resultSet.getString(5)),
+                            Integer.parseInt(resultSet.getString(6)),
+                            resultSet.getString(7)
+                    );
+                    result.add(p);
+                }
+            } catch (SQLException e) {
+                throw (e);
+            } finally {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            }
+            return result;
+        } else {
+            // We couldn't verify the user to return an empty list
+            return Collections.emptyList();
+        }
+
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -226,7 +278,7 @@ public class MatchResource {
      * @throws SQLException
      */
     @ApiMethod(path = "match/{id}", httpMethod = PUT)
-    public ResultStatus putMatch(@Named("token") String token, @Named("matchID") int matchID) throws SQLException {
+    public ResultStatus putMatch(@Named("token") String token, @Named("id") int matchID) throws SQLException {
         Player player = TokenVerifier.verifyPlayer(token);
         if (player != null) {
             Connection connection = null;
@@ -388,6 +440,30 @@ public class MatchResource {
                                 "INNER JOIN Player AS Opponent ON Match.opponentID = Opponent.ID " +
                                 "INNER JOIN Sport ON Match.sportID = Sport.ID " +
                                 "WHERE Match.verified = FALSE " +
+                                "AND Match.opponentID = %d " +
+                                "ORDER BY Match.time",
+                        player.getId()
+                )
+        );
+    }
+
+    /**
+     * Gets all the unconfirmed matches for a user. Since the user is confirming the match,
+     * that means the user is actually the opponent.
+     * @param player
+     * @param statement
+     * @return
+     * @throws SQLException
+     */
+    private ResultSet selectConfirmedMatches(Player player, Statement statement) throws SQLException {
+        return statement.executeQuery(
+                String.format("SELECT Match.ID, Sport.name, Player.name, Opponent.name, Match.playerScore, " +
+                                "Match.opponentScore, Match.time " +
+                                "FROM Match " +
+                                "INNER JOIN Player ON Match.playerID = Player.ID " +
+                                "INNER JOIN Player AS Opponent ON Match.opponentID = Opponent.ID " +
+                                "INNER JOIN Sport ON Match.sportID = Sport.ID " +
+                                "WHERE Match.verified = TRUE " +
                                 "AND Match.opponentID = %d " +
                                 "ORDER BY Match.time",
                         player.getId()
