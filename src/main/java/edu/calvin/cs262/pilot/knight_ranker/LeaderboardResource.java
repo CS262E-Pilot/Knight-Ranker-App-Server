@@ -94,7 +94,7 @@ public class LeaderboardResource {
                                 "WHERE Sport.name = '%s' " +
                                 "AND SportRank.sportID = Sport.id " +
                                 "AND SportRank.playerID = Player.id " +
-                                "ORDER BY SportRank.eloRank ASC",
+                                "ORDER BY SportRank.eloRank DESC",
                     sport
                 )
         );
