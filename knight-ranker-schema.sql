@@ -76,8 +76,8 @@ CREATE TABLE Match (
 	sportID integer REFERENCES Sport(ID),
 	playerID integer REFERENCES Player(ID),
 	opponentID integer REFERENCES Player(ID),
-	playerScore integer REFERENCES Player(ID),
-	opponentScore integer REFERENCES Player(ID),
+	playerScore integer,
+	opponentScore integer,
 	winner integer REFERENCES Player(ID),
 	time timestamp,
 	verified boolean
